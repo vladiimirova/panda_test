@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Chart, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip } from 'chart.js';
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import type { Translation } from '../i18n';
 import type { ChartPoint, ForecastMode } from '../types/weather';
 
@@ -18,12 +18,15 @@ let chart: Chart<'line'> | null = null;
 
 watch(
   () => [props.points, props.mode, props.isLoading, props.copy] as const,
-  () => {
-    if (props.isLoading || !canvas.value || props.points.length === 0) {
+  async () => {
+    if (props.isLoading || props.points.length === 0) {
       chart?.destroy();
       chart = null;
       return;
     }
+
+    await nextTick();
+    if (!canvas.value) return;
 
     const data = {
       labels: props.points.map((point) => point.label),
