@@ -17,6 +17,8 @@ export const translations = {
       favoritesLimitMessage:
         'Для додавання видаліть місто з обраного, тому що максимум 5.',
       favoritesLimitConfirm: 'Зрозуміло',
+      userCityLoading: 'Визначаємо ваше місто...',
+      userCityError: 'Не вдалося визначити місто за IP. Виберіть місто вручну.',
     },
     language: {
       label: 'Мова',
@@ -84,6 +86,8 @@ export const translations = {
       favoritesLimitMessage:
         'Remove a city from favorites before adding another one because the maximum is 5.',
       favoritesLimitConfirm: 'Got it',
+      userCityLoading: 'Detecting your city...',
+      userCityError: 'Unable to detect your city by IP. Choose a city manually.',
     },
     language: {
       label: 'Language',

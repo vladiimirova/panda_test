@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import ConfirmModal from './components/ConfirmModal.vue';
 import LanguageToggle from './components/LanguageToggle.vue';
 import WeatherBlock from './components/WeatherBlock.vue';
 import { getInitialLanguage, translations } from './i18n';
+import { getUserCityByIp } from './services/ipLocation';
 import type { CitySuggestion } from './types/weather';
 import { getCityKey, loadFavorites, saveFavorites } from './utils/favorites';
 
@@ -16,8 +17,11 @@ const maxFavorites = 5;
 const blocks = ref<WeatherBlockItem[]>([{ id: 1 }]);
 const blockToDelete = ref<number | null>(null);
 const favorites = ref<CitySuggestion[]>(loadFavorites());
+const userCity = ref<CitySuggestion | null>(null);
 const activeTab = ref<'weather' | 'favorites'>('weather');
 const showFavoritesLimitModal = ref(false);
+const isDetectingUserCity = ref(false);
+const userCityError = ref('');
 const language = ref(getInitialLanguage());
 let nextBlockId = 2;
 
@@ -35,6 +39,22 @@ watch(
   },
   { deep: true },
 );
+
+onMounted(async () => {
+  isDetectingUserCity.value = true;
+  userCityError.value = '';
+
+  try {
+    userCity.value = await getUserCityByIp();
+    if (!userCity.value) {
+      userCityError.value = copy.value.app.userCityError;
+    }
+  } catch {
+    userCityError.value = copy.value.app.userCityError;
+  } finally {
+    isDetectingUserCity.value = false;
+  }
+});
 
 function addBlock() {
   if (!canAddBlock.value) return;
@@ -108,6 +128,8 @@ const deleteMessage = computed(() => {
       </header>
 
       <p v-if="!canAddBlock" class="status-text">{{ copy.app.maxBlocks }}</p>
+      <p v-if="isDetectingUserCity" class="status-text">{{ copy.app.userCityLoading }}</p>
+      <p v-else-if="userCityError" class="status-text">{{ userCityError }}</p>
 
       <div class="tabs" role="tablist" aria-label="Weather views">
         <button
@@ -134,6 +156,7 @@ const deleteMessage = computed(() => {
           :language="language"
           :copy="copy"
           :favorite-cities="favorites"
+          :initial-city="index === 0 ? userCity || undefined : undefined"
           :can-remove="blocks.length > 1"
           @remove="requestDeleteBlock(block.id)"
           @toggle-favorite="toggleFavorite"

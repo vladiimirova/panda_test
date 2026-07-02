@@ -17,6 +17,7 @@ const props = defineProps<{
   language: Language;
   copy: Translation;
   favoriteCities: CitySuggestion[];
+  initialCity?: CitySuggestion;
   fixedCity?: CitySuggestion;
 }>();
 
@@ -37,6 +38,7 @@ const isLoadingForecast = ref(false);
 const error = ref('');
 let searchTimer: number | undefined;
 let skipNextSearch = false;
+let initialCityKey = '';
 
 const isReadonly = computed(() => Boolean(props.fixedCity));
 const isFavorite = computed(() => {
@@ -62,6 +64,23 @@ watch(
     selectedCity.value = fixedCity;
     city.value = formatCity(fixedCity);
     await loadWeather(fixedCity);
+  },
+  { immediate: true },
+);
+
+watch(
+  () => props.initialCity,
+  async (initialCity) => {
+    if (!initialCity || selectedCity.value) return;
+
+    const nextInitialCityKey = getCityKey(initialCity);
+    if (initialCityKey === nextInitialCityKey) return;
+
+    initialCityKey = nextInitialCityKey;
+    skipNextSearch = true;
+    selectedCity.value = initialCity;
+    city.value = formatCity(initialCity);
+    await loadWeather(initialCity);
   },
   { immediate: true },
 );
@@ -149,8 +168,8 @@ async function loadWeather(cityToLoad: CitySuggestion) {
 watch(
   () => props.language,
   async () => {
-  if (!selectedCity.value) return;
-  await loadWeather(selectedCity.value);
+    if (!selectedCity.value) return;
+    await loadWeather(selectedCity.value);
   },
 );
 
