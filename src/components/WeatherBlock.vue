@@ -6,7 +6,7 @@ import WeatherChart from './WeatherChart.vue';
 import WeatherCard from './WeatherCard.vue';
 import type { Language, Translation } from '../i18n';
 import { getCurrentWeather, getForecast, searchCities } from '../services/openWeather';
-import { buildTodayPoints, buildWeekPoints } from '../utils/forecast';
+import { buildDayPoints, buildWeekPoints } from '../utils/forecast';
 import { formatCity } from '../utils/formatCity';
 import type { CitySuggestion, CurrentWeather, ForecastMode, ForecastResponse } from '../types/weather';
 import { getCityKey } from '../utils/favorites';
@@ -57,7 +57,7 @@ const chartPoints = computed(() => {
   if (!forecast.value) return [];
 
   return forecastMode.value === 'day'
-    ? buildTodayPoints(forecast.value.list, props.language, forecast.value.city.timezone)
+    ? buildDayPoints(forecast.value.list, props.language, forecast.value.city.timezone)
     : buildWeekPoints(forecast.value.list, props.language, forecast.value.city.timezone);
 });
 

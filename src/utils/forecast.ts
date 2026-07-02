@@ -1,18 +1,14 @@
 import type { ChartPoint, ForecastItem } from '../types/weather';
 import type { Language } from '../i18n';
 
-export function buildTodayPoints(
+export function buildDayPoints(
   items: ForecastItem[],
   language: Language,
   timezoneOffset: number,
 ): ChartPoint[] {
   if (!items.length) return [];
 
-  const todayDate = getDateKey(Date.now() / 1000, timezoneOffset);
-  const fallbackDate = getDateKey(items[0].dt, timezoneOffset);
-  const currentDate = items.some((item) => getDateKey(item.dt, timezoneOffset) === todayDate)
-    ? todayDate
-    : fallbackDate;
+  const currentDate = getBestDayKey(items, timezoneOffset);
   const tempsByHour = items.reduce<Record<number, number>>((acc, item) => {
     if (getDateKey(item.dt, timezoneOffset) !== currentDate) return acc;
 
@@ -48,6 +44,17 @@ export function buildWeekPoints(
 
 function getDateKey(timestamp: number, timezoneOffset: number) {
   return new Date((timestamp + timezoneOffset) * 1000).toISOString().slice(0, 10);
+}
+
+function getBestDayKey(items: ForecastItem[], timezoneOffset: number) {
+  const grouped = items.reduce<Record<string, number>>((acc, item) => {
+    const key = getDateKey(item.dt, timezoneOffset);
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const [bestDay] = Object.entries(grouped).sort(([, countA], [, countB]) => countB - countA)[0];
+  return bestDay;
 }
 
 function getLocalHour(timestamp: number, timezoneOffset: number) {

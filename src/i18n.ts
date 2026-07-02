@@ -60,7 +60,7 @@ export const translations = {
     },
     chart: {
       title: 'Графік температури',
-      dayTitle: 'Сьогодні по годинах',
+      dayTitle: 'День по годинах',
       weekTitle: 'Середня за 5 днів',
       dayDataset: 'Температура по годинах',
       weekDataset: 'Середня температура',
@@ -135,7 +135,7 @@ export const translations = {
     },
     chart: {
       title: 'Temperature chart',
-      dayTitle: 'Today by hour',
+      dayTitle: 'Day by hour',
       weekTitle: 'Average for 5 days',
       dayDataset: 'Hourly temperature',
       weekDataset: 'Average temperature',
