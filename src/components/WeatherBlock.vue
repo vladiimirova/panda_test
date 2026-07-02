@@ -57,8 +57,8 @@ const chartPoints = computed(() => {
   if (!forecast.value) return [];
 
   return forecastMode.value === 'day'
-    ? buildTodayPoints(forecast.value.list, props.language)
-    : buildWeekPoints(forecast.value.list, props.language);
+    ? buildTodayPoints(forecast.value.list, props.language, forecast.value.city.timezone)
+    : buildWeekPoints(forecast.value.list, props.language, forecast.value.city.timezone);
 });
 
 watch(

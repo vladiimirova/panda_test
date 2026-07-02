@@ -1,23 +1,34 @@
 import type { ChartPoint, ForecastItem } from '../types/weather';
 import type { Language } from '../i18n';
 
-export function buildTodayPoints(items: ForecastItem[], language: Language): ChartPoint[] {
-  const [firstItem] = items;
-  if (!firstItem) return [];
+export function buildTodayPoints(
+  items: ForecastItem[],
+  language: Language,
+  timezoneOffset: number,
+): ChartPoint[] {
+  if (!items.length) return [];
 
-  const currentDate = getDateKey(firstItem.dt);
+  const todayDate = getDateKey(Date.now() / 1000, timezoneOffset);
+  const fallbackDate = getDateKey(items[0].dt, timezoneOffset);
+  const currentDate = items.some((item) => getDateKey(item.dt, timezoneOffset) === todayDate)
+    ? todayDate
+    : fallbackDate;
 
   return items
-    .filter((item) => getDateKey(item.dt) === currentDate)
+    .filter((item) => getDateKey(item.dt, timezoneOffset) === currentDate)
     .map((item) => ({
-      label: formatHour(item.dt, language),
+      label: formatHour(item.dt, language, timezoneOffset),
       temp: Math.round(item.main.temp),
     }));
 }
 
-export function buildWeekPoints(items: ForecastItem[], language: Language): ChartPoint[] {
+export function buildWeekPoints(
+  items: ForecastItem[],
+  language: Language,
+  timezoneOffset: number,
+): ChartPoint[] {
   const grouped = items.reduce<Record<string, number[]>>((acc, item) => {
-    const key = getDateKey(item.dt);
+    const key = getDateKey(item.dt, timezoneOffset);
     acc[key] = acc[key] ?? [];
     acc[key].push(item.main.temp);
     return acc;
@@ -31,15 +42,16 @@ export function buildWeekPoints(items: ForecastItem[], language: Language): Char
     }));
 }
 
-function getDateKey(timestamp: number) {
-  return new Date(timestamp * 1000).toISOString().slice(0, 10);
+function getDateKey(timestamp: number, timezoneOffset: number) {
+  return new Date((timestamp + timezoneOffset) * 1000).toISOString().slice(0, 10);
 }
 
-function formatHour(timestamp: number, language: Language) {
+function formatHour(timestamp: number, language: Language, timezoneOffset: number) {
   return new Intl.DateTimeFormat(getLocale(language), {
     hour: '2-digit',
     minute: '2-digit',
-  }).format(timestamp * 1000);
+    timeZone: 'UTC',
+  }).format((timestamp + timezoneOffset) * 1000);
 }
 
 function formatDay(date: string, language: Language) {
