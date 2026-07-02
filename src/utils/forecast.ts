@@ -13,13 +13,17 @@ export function buildTodayPoints(
   const currentDate = items.some((item) => getDateKey(item.dt, timezoneOffset) === todayDate)
     ? todayDate
     : fallbackDate;
+  const tempsByHour = items.reduce<Record<number, number>>((acc, item) => {
+    if (getDateKey(item.dt, timezoneOffset) !== currentDate) return acc;
 
-  return items
-    .filter((item) => getDateKey(item.dt, timezoneOffset) === currentDate)
-    .map((item) => ({
-      label: formatHour(item.dt, language, timezoneOffset),
-      temp: Math.round(item.main.temp),
-    }));
+    acc[getLocalHour(item.dt, timezoneOffset)] = Math.round(item.main.temp);
+    return acc;
+  }, {});
+
+  return buildDayHours().map((hour) => ({
+    label: formatHourSlot(hour, language),
+    temp: tempsByHour[hour % 24] ?? null,
+  }));
 }
 
 export function buildWeekPoints(
@@ -46,12 +50,20 @@ function getDateKey(timestamp: number, timezoneOffset: number) {
   return new Date((timestamp + timezoneOffset) * 1000).toISOString().slice(0, 10);
 }
 
-function formatHour(timestamp: number, language: Language, timezoneOffset: number) {
+function getLocalHour(timestamp: number, timezoneOffset: number) {
+  return new Date((timestamp + timezoneOffset) * 1000).getUTCHours();
+}
+
+function buildDayHours() {
+  return [0, 3, 6, 9, 12, 15, 18, 21, 24];
+}
+
+function formatHourSlot(hour: number, language: Language) {
   return new Intl.DateTimeFormat(getLocale(language), {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: 'UTC',
-  }).format((timestamp + timezoneOffset) * 1000);
+  }).format(Date.UTC(1970, 0, 1, hour));
 }
 
 function formatDay(date: string, language: Language) {

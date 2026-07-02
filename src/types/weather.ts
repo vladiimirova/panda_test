@@ -48,7 +48,7 @@ export interface ForecastItem {
 
 export interface ChartPoint {
   label: string;
-  temp: number;
+  temp: number | null;
 }
 
 export type ForecastMode = 'day' | 'week';

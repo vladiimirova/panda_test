@@ -57,7 +57,8 @@ watch(
         plugins: {
           tooltip: {
             callbacks: {
-              label: (context) => `${context.parsed.y}°C`,
+              label: (context) =>
+                context.parsed.y === null ? '' : `${context.parsed.y}°C`,
             },
           },
         },
