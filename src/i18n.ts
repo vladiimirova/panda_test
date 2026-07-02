@@ -40,6 +40,7 @@ export const translations = {
       placeholder: 'Наприклад, Kyiv',
       submit: 'Знайти',
       loading: 'Шукаємо міста...',
+      change: 'Змінити місто',
     },
     forecast: {
       aria: 'Перемикання прогнозу',
@@ -114,6 +115,7 @@ export const translations = {
       placeholder: 'For example, Kyiv',
       submit: 'Search',
       loading: 'Searching cities...',
+      change: 'Change city',
     },
     forecast: {
       aria: 'Forecast switcher',

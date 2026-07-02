@@ -263,6 +263,18 @@ h2 {
   cursor: pointer;
 }
 
+.change-city-button {
+  width: max-content;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--text-main);
+  background: var(--surface-control);
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .search-row button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
@@ -526,6 +538,10 @@ h2 {
   }
 
   .search-row button {
+    width: 100%;
+  }
+
+  .change-city-button {
     width: 100%;
   }
 

@@ -9,14 +9,15 @@ import { getUserCityByIp } from './services/ipLocation';
 import { getInitialTheme } from './theme';
 import type { CitySuggestion } from './types/weather';
 import { getCityKey, loadFavorites, saveFavorites } from './utils/favorites';
-
-interface WeatherBlockItem {
-  id: number;
-}
+import {
+  loadWeatherBlocks,
+  saveWeatherBlocks,
+  type StoredWeatherBlock,
+} from './utils/weatherBlocks';
 
 const maxBlocks = 5;
 const maxFavorites = 5;
-const blocks = ref<WeatherBlockItem[]>([{ id: 1 }]);
+const blocks = ref<StoredWeatherBlock[]>(loadWeatherBlocks());
 const blockToDelete = ref<number | null>(null);
 const favorites = ref<CitySuggestion[]>(loadFavorites());
 const userCity = ref<CitySuggestion | null>(null);
@@ -26,7 +27,7 @@ const isDetectingUserCity = ref(false);
 const userCityError = ref('');
 const language = ref(getInitialLanguage());
 const theme = ref(getInitialTheme());
-let nextBlockId = 2;
+let nextBlockId = Math.max(...blocks.value.map((block) => block.id), 0) + 1;
 
 const canAddBlock = computed(() => blocks.value.length < maxBlocks);
 const copy = computed(() => translations[language.value]);
@@ -43,6 +44,14 @@ watch(
   favorites,
   (value) => {
     saveFavorites(value);
+  },
+  { deep: true },
+);
+
+watch(
+  blocks,
+  (value) => {
+    saveWeatherBlocks(value);
   },
   { deep: true },
 );
@@ -83,6 +92,12 @@ function confirmDeleteBlock() {
 
 function cancelDeleteBlock() {
   blockToDelete.value = null;
+}
+
+function updateBlockCity(blockId: number, city: CitySuggestion) {
+  blocks.value = blocks.value.map((block) =>
+    block.id === blockId ? { ...block, city } : block,
+  );
 }
 
 function toggleFavorite(city: CitySuggestion) {
@@ -164,10 +179,11 @@ const deleteMessage = computed(() => {
           :language="language"
           :copy="copy"
           :favorite-cities="favorites"
-          :initial-city="index === 0 ? userCity || undefined : undefined"
+          :initial-city="block.city || (index === 0 ? userCity || undefined : undefined)"
           :can-remove="blocks.length > 1"
           @remove="requestDeleteBlock(block.id)"
           @toggle-favorite="toggleFavorite"
+          @city-selected="updateBlockCity(block.id, $event)"
         />
       </div>
 

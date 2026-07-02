@@ -24,6 +24,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   remove: [];
   toggleFavorite: [city: CitySuggestion];
+  citySelected: [city: CitySuggestion];
 }>();
 
 const city = ref('');
@@ -36,11 +37,15 @@ const isSearching = ref(false);
 const isLoadingWeather = ref(false);
 const isLoadingForecast = ref(false);
 const error = ref('');
+const isEditingCity = ref(false);
 let searchTimer: number | undefined;
 let skipNextSearch = false;
 let initialCityKey = '';
 
 const isReadonly = computed(() => Boolean(props.fixedCity));
+const shouldShowSearch = computed(
+  () => !isReadonly.value && (!selectedCity.value || isEditingCity.value),
+);
 const isFavorite = computed(() => {
   if (!selectedCity.value) return false;
 
@@ -63,6 +68,7 @@ watch(
 
     selectedCity.value = fixedCity;
     city.value = formatCity(fixedCity);
+    isEditingCity.value = false;
     await loadWeather(fixedCity);
   },
   { immediate: true },
@@ -80,6 +86,7 @@ watch(
     skipNextSearch = true;
     selectedCity.value = initialCity;
     city.value = formatCity(initialCity);
+    isEditingCity.value = false;
     await loadWeather(initialCity);
   },
   { immediate: true },
@@ -123,6 +130,8 @@ async function selectCity(suggestion: CitySuggestion) {
   selectedCity.value = suggestion;
   city.value = formatCity(suggestion);
   suggestions.value = [];
+  isEditingCity.value = false;
+  emit('citySelected', suggestion);
   await loadWeather(suggestion);
 }
 
@@ -177,6 +186,11 @@ function toggleFavorite() {
   if (!selectedCity.value) return;
   emit('toggleFavorite', selectedCity.value);
 }
+
+function showCitySearch() {
+  isEditingCity.value = true;
+  suggestions.value = [];
+}
 </script>
 
 <template>
@@ -195,7 +209,7 @@ function toggleFavorite() {
     </header>
 
     <CitySearch
-      v-if="!isReadonly"
+      v-if="shouldShowSearch"
       :model-value="city"
       :suggestions="suggestions"
       :is-searching="isSearching"
@@ -204,6 +218,14 @@ function toggleFavorite() {
       @select="selectCity"
       @submit="submitSearch"
     />
+    <button
+      v-else-if="!isReadonly"
+      class="change-city-button"
+      type="button"
+      @click="showCitySearch"
+    >
+      {{ copy.search.change }}
+    </button>
 
     <p v-if="error" class="error-message">{{ error }}</p>
 
