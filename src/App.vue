@@ -1,15 +1,91 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref, watch } from 'vue';
+import CitySearch from './components/CitySearch.vue';
+import WeatherCard from './components/WeatherCard.vue';
+import { getCurrentWeather, searchCities } from './services/openWeather';
+import { formatCity } from './utils/formatCity';
+import type { CitySuggestion, CurrentWeather } from './types/weather';
 
 const city = ref('');
-const lastSearch = ref('');
+const selectedCity = ref<CitySuggestion | null>(null);
+const suggestions = ref<CitySuggestion[]>([]);
+const weather = ref<CurrentWeather | null>(null);
+const isSearching = ref(false);
+const isLoadingWeather = ref(false);
+const error = ref('');
+let searchTimer: number | undefined;
+let skipNextSearch = false;
 
-const canSearch = computed(() => city.value.trim().length > 1);
+watch(city, (value) => {
+  window.clearTimeout(searchTimer);
+  if (skipNextSearch) {
+    skipNextSearch = false;
+    return;
+  }
 
-function submitSearch() {
-  if (!canSearch.value) return;
+  suggestions.value = [];
+  if (value.trim().length < 2) return;
 
-  lastSearch.value = city.value.trim();
+  searchTimer = window.setTimeout(async () => {
+    isSearching.value = true;
+    try {
+      suggestions.value = await searchCities(value);
+    } catch (requestError) {
+      error.value =
+        requestError instanceof Error ? requestError.message : 'Не вдалося знайти місто.';
+    } finally {
+      isSearching.value = false;
+    }
+  }, 350);
+});
+
+function updateCity(value: string) {
+  city.value = value;
+  selectedCity.value = null;
+  weather.value = null;
+  error.value = '';
+}
+
+async function selectCity(suggestion: CitySuggestion) {
+  window.clearTimeout(searchTimer);
+  skipNextSearch = true;
+  selectedCity.value = suggestion;
+  city.value = formatCity(suggestion);
+  suggestions.value = [];
+  await loadWeather(suggestion);
+}
+
+async function submitSearch() {
+  if (city.value.trim().length < 2) return;
+
+  if (selectedCity.value) {
+    await loadWeather(selectedCity.value);
+    return;
+  }
+
+  const [firstSuggestion] = suggestions.value.length
+    ? suggestions.value
+    : await searchCities(city.value);
+
+  if (!firstSuggestion) {
+    error.value = 'Місто не знайдено.';
+    return;
+  }
+
+  await selectCity(firstSuggestion);
+}
+
+async function loadWeather(cityToLoad: CitySuggestion) {
+  isLoadingWeather.value = true;
+  error.value = '';
+  try {
+    weather.value = await getCurrentWeather(cityToLoad);
+  } catch (requestError) {
+    error.value =
+      requestError instanceof Error ? requestError.message : 'Не вдалося завантажити погоду.';
+  } finally {
+    isLoadingWeather.value = false;
+  }
 }
 </script>
 
@@ -20,34 +96,22 @@ function submitSearch() {
         <p class="eyebrow">OpenWeatherMap</p>
         <h1 id="page-title">Weather App</h1>
         <p class="intro-text">
-          Введи город, чтобы подготовить запрос погоды. Подключение API будет следующим отдельным коммитом.
+          Введи город, выбери вариант из автокомплита и получи текущую погоду через OpenWeatherMap.
         </p>
       </div>
 
-      <form class="search-form" @submit.prevent="submitSearch">
-        <label for="city">Город</label>
-        <div class="search-row">
-          <input
-            id="city"
-            v-model="city"
-            name="city"
-            type="search"
-            autocomplete="address-level2"
-            placeholder="Например, Kyiv"
-          />
-          <button type="submit" :disabled="!canSearch">Найти</button>
-        </div>
-      </form>
+      <CitySearch
+        :model-value="city"
+        :suggestions="suggestions"
+        :is-searching="isSearching"
+        @update:model-value="updateCity"
+        @select="selectCity"
+        @submit="submitSearch"
+      />
 
-      <section class="weather-card" aria-live="polite">
-        <div>
-          <p class="card-label">Текущий запрос</p>
-          <h2>{{ lastSearch || 'Город пока не выбран' }}</h2>
-        </div>
-        <p>
-          Здесь появятся температура, описание погоды, влажность и ветер после подключения API.
-        </p>
-      </section>
+      <p v-if="error" class="error-message">{{ error }}</p>
+
+      <WeatherCard :weather="weather" :is-loading="isLoadingWeather" />
     </section>
   </main>
 </template>
