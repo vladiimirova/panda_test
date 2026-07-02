@@ -1,141 +1,93 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import CitySearch from './components/CitySearch.vue';
-import ForecastToggle from './components/ForecastToggle.vue';
-import WeatherChart from './components/WeatherChart.vue';
-import WeatherCard from './components/WeatherCard.vue';
-import { getCurrentWeather, getForecast, searchCities } from './services/openWeather';
-import { buildTodayPoints, buildWeekPoints } from './utils/forecast';
-import { formatCity } from './utils/formatCity';
-import type { CitySuggestion, CurrentWeather, ForecastMode, ForecastResponse } from './types/weather';
+import { computed, ref } from 'vue';
+import ConfirmModal from './components/ConfirmModal.vue';
+import WeatherBlock from './components/WeatherBlock.vue';
 
-const city = ref('');
-const selectedCity = ref<CitySuggestion | null>(null);
-const suggestions = ref<CitySuggestion[]>([]);
-const weather = ref<CurrentWeather | null>(null);
-const forecast = ref<ForecastResponse | null>(null);
-const forecastMode = ref<ForecastMode>('day');
-const isSearching = ref(false);
-const isLoadingWeather = ref(false);
-const isLoadingForecast = ref(false);
-const error = ref('');
-let searchTimer: number | undefined;
-let skipNextSearch = false;
+interface WeatherBlockItem {
+  id: number;
+}
 
-const chartPoints = computed(() => {
-  if (!forecast.value) return [];
+const maxBlocks = 5;
+const blocks = ref<WeatherBlockItem[]>([{ id: 1 }]);
+const blockToDelete = ref<number | null>(null);
+let nextBlockId = 2;
 
-  return forecastMode.value === 'day'
-    ? buildTodayPoints(forecast.value.list)
-    : buildWeekPoints(forecast.value.list);
+const canAddBlock = computed(() => blocks.value.length < maxBlocks);
+
+function addBlock() {
+  if (!canAddBlock.value) return;
+  blocks.value.push({ id: nextBlockId });
+  nextBlockId += 1;
+}
+
+function requestDeleteBlock(blockId: number) {
+  if (blocks.value.length === 1) return;
+  blockToDelete.value = blockId;
+}
+
+function confirmDeleteBlock() {
+  if (!blockToDelete.value) return;
+
+  blocks.value = blocks.value.filter((block) => block.id !== blockToDelete.value);
+  blockToDelete.value = null;
+}
+
+function cancelDeleteBlock() {
+  blockToDelete.value = null;
+}
+
+function getBlockNumber(blockId: number) {
+  const index = blocks.value.findIndex((block) => block.id === blockId);
+  if (index === -1) return blocks.value.length;
+
+  return index + 1;
+}
+
+const deleteMessage = computed(() => {
+  if (!blockToDelete.value) return '';
+
+  return `Видалити блок погоди #${getBlockNumber(blockToDelete.value)}?`;
 });
-
-watch(city, (value) => {
-  window.clearTimeout(searchTimer);
-  if (skipNextSearch) {
-    skipNextSearch = false;
-    return;
-  }
-
-  suggestions.value = [];
-  if (value.trim().length < 2) return;
-
-  searchTimer = window.setTimeout(async () => {
-    isSearching.value = true;
-    try {
-      suggestions.value = await searchCities(value);
-    } catch (requestError) {
-      error.value =
-        requestError instanceof Error ? requestError.message : 'Не вдалося знайти місто.';
-    } finally {
-      isSearching.value = false;
-    }
-  }, 350);
-});
-
-function updateCity(value: string) {
-  city.value = value;
-  selectedCity.value = null;
-  weather.value = null;
-  forecast.value = null;
-  error.value = '';
-}
-
-async function selectCity(suggestion: CitySuggestion) {
-  window.clearTimeout(searchTimer);
-  skipNextSearch = true;
-  selectedCity.value = suggestion;
-  city.value = formatCity(suggestion);
-  suggestions.value = [];
-  await loadWeather(suggestion);
-}
-
-async function submitSearch() {
-  if (city.value.trim().length < 2) return;
-
-  if (selectedCity.value) {
-    await loadWeather(selectedCity.value);
-    return;
-  }
-
-  const [firstSuggestion] = suggestions.value.length
-    ? suggestions.value
-    : await searchCities(city.value);
-
-  if (!firstSuggestion) {
-    error.value = 'Місто не знайдено.';
-    return;
-  }
-
-  await selectCity(firstSuggestion);
-}
-
-async function loadWeather(cityToLoad: CitySuggestion) {
-  isLoadingWeather.value = true;
-  isLoadingForecast.value = true;
-  error.value = '';
-  try {
-    const [currentWeather, cityForecast] = await Promise.all([
-      getCurrentWeather(cityToLoad),
-      getForecast(cityToLoad),
-    ]);
-    weather.value = currentWeather;
-    forecast.value = cityForecast;
-  } catch (requestError) {
-    error.value =
-      requestError instanceof Error ? requestError.message : 'Не вдалося завантажити погоду.';
-  } finally {
-    isLoadingWeather.value = false;
-    isLoadingForecast.value = false;
-  }
-}
 </script>
 
 <template>
   <main class="weather-page">
     <section class="weather-shell" aria-labelledby="page-title">
-      <div class="intro">
-        <p class="eyebrow">OpenWeatherMap</p>
-        <h1 id="page-title">Weather App</h1>
-        <p class="intro-text">
-          Введи город, выбери вариант из автокомплита и получи текущую погоду через OpenWeatherMap.
-        </p>
+      <header class="app-header">
+        <div class="intro">
+          <p class="eyebrow">OpenWeatherMap</p>
+          <h1 id="page-title">Weather App</h1>
+          <p class="intro-text">
+            Введи город, выбери вариант из автокомплита и получи текущую погоду через OpenWeatherMap.
+          </p>
+        </div>
+
+        <button class="add-block-button" type="button" :disabled="!canAddBlock" @click="addBlock">
+          +
+        </button>
+      </header>
+
+      <p v-if="!canAddBlock" class="status-text">Максимум 5 блоків погоди.</p>
+
+      <div class="weather-blocks">
+        <WeatherBlock
+          v-for="(block, index) in blocks"
+          :key="block.id"
+          :title="`Блок ${index + 1}`"
+          :can-remove="blocks.length > 1"
+          @remove="requestDeleteBlock(block.id)"
+        />
       </div>
-
-      <CitySearch
-        :model-value="city"
-        :suggestions="suggestions"
-        :is-searching="isSearching"
-        @update:model-value="updateCity"
-        @select="selectCity"
-        @submit="submitSearch"
-      />
-
-      <p v-if="error" class="error-message">{{ error }}</p>
-
-      <ForecastToggle v-model="forecastMode" />
-      <WeatherCard :weather="weather" :is-loading="isLoadingWeather" />
-      <WeatherChart :points="chartPoints" :mode="forecastMode" :is-loading="isLoadingForecast" />
     </section>
+
+    <ConfirmModal
+      v-if="blockToDelete"
+      title="Підтвердження"
+      :message="deleteMessage"
+      confirm-label="Видалити"
+      cancel-label="Скасувати"
+      @confirm="confirmDeleteBlock"
+      @cancel="cancelDeleteBlock"
+    />
   </main>
 </template>
