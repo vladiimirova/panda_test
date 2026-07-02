@@ -181,7 +181,34 @@ h2 {
   background: #fff4f1;
 }
 
-.weather-card {
+.forecast-toggle {
+  width: max-content;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border: 1px solid rgba(23, 32, 38, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.forecast-toggle button {
+  min-width: 96px;
+  height: 40px;
+  border: 0;
+  border-radius: 6px;
+  color: #536168;
+  background: transparent;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.forecast-toggle button.active {
+  color: #ffffff;
+  background: #2e7189;
+}
+
+.weather-card,
+.chart-card {
   display: grid;
   gap: 14px;
   padding: 22px;
@@ -193,6 +220,16 @@ h2 {
 .weather-card p:last-child {
   color: #536168;
   line-height: 1.55;
+}
+
+.chart-wrap {
+  height: 280px;
+  min-width: 0;
+}
+
+.chart-wrap canvas {
+  width: 100%;
+  height: 100%;
 }
 
 .weather-details {
@@ -233,5 +270,9 @@ h2 {
 
   .weather-details {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .forecast-toggle {
+    width: 100%;
   }
 }

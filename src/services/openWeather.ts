@@ -1,4 +1,4 @@
-import type { CitySuggestion, CurrentWeather } from '../types/weather';
+import type { CitySuggestion, CurrentWeather, ForecastResponse } from '../types/weather';
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY as string | undefined;
 const API_BASE_URL = 'https://api.openweathermap.org';
@@ -38,4 +38,14 @@ export async function getCurrentWeather(city: CitySuggestion): Promise<CurrentWe
   url.searchParams.set('lang', 'uk');
 
   return request<CurrentWeather>(url);
+}
+
+export async function getForecast(city: CitySuggestion): Promise<ForecastResponse> {
+  const url = new URL('/data/2.5/forecast', API_BASE_URL);
+  url.searchParams.set('lat', String(city.lat));
+  url.searchParams.set('lon', String(city.lon));
+  url.searchParams.set('units', 'metric');
+  url.searchParams.set('lang', 'uk');
+
+  return request<ForecastResponse>(url);
 }

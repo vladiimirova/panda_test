@@ -1,20 +1,34 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import CitySearch from './components/CitySearch.vue';
+import ForecastToggle from './components/ForecastToggle.vue';
+import WeatherChart from './components/WeatherChart.vue';
 import WeatherCard from './components/WeatherCard.vue';
-import { getCurrentWeather, searchCities } from './services/openWeather';
+import { getCurrentWeather, getForecast, searchCities } from './services/openWeather';
+import { buildTodayPoints, buildWeekPoints } from './utils/forecast';
 import { formatCity } from './utils/formatCity';
-import type { CitySuggestion, CurrentWeather } from './types/weather';
+import type { CitySuggestion, CurrentWeather, ForecastMode, ForecastResponse } from './types/weather';
 
 const city = ref('');
 const selectedCity = ref<CitySuggestion | null>(null);
 const suggestions = ref<CitySuggestion[]>([]);
 const weather = ref<CurrentWeather | null>(null);
+const forecast = ref<ForecastResponse | null>(null);
+const forecastMode = ref<ForecastMode>('day');
 const isSearching = ref(false);
 const isLoadingWeather = ref(false);
+const isLoadingForecast = ref(false);
 const error = ref('');
 let searchTimer: number | undefined;
 let skipNextSearch = false;
+
+const chartPoints = computed(() => {
+  if (!forecast.value) return [];
+
+  return forecastMode.value === 'day'
+    ? buildTodayPoints(forecast.value.list)
+    : buildWeekPoints(forecast.value.list);
+});
 
 watch(city, (value) => {
   window.clearTimeout(searchTimer);
@@ -43,6 +57,7 @@ function updateCity(value: string) {
   city.value = value;
   selectedCity.value = null;
   weather.value = null;
+  forecast.value = null;
   error.value = '';
 }
 
@@ -77,14 +92,21 @@ async function submitSearch() {
 
 async function loadWeather(cityToLoad: CitySuggestion) {
   isLoadingWeather.value = true;
+  isLoadingForecast.value = true;
   error.value = '';
   try {
-    weather.value = await getCurrentWeather(cityToLoad);
+    const [currentWeather, cityForecast] = await Promise.all([
+      getCurrentWeather(cityToLoad),
+      getForecast(cityToLoad),
+    ]);
+    weather.value = currentWeather;
+    forecast.value = cityForecast;
   } catch (requestError) {
     error.value =
       requestError instanceof Error ? requestError.message : 'Не вдалося завантажити погоду.';
   } finally {
     isLoadingWeather.value = false;
+    isLoadingForecast.value = false;
   }
 }
 </script>
@@ -111,7 +133,9 @@ async function loadWeather(cityToLoad: CitySuggestion) {
 
       <p v-if="error" class="error-message">{{ error }}</p>
 
+      <ForecastToggle v-model="forecastMode" />
       <WeatherCard :weather="weather" :is-loading="isLoadingWeather" />
+      <WeatherChart :points="chartPoints" :mode="forecastMode" :is-loading="isLoadingForecast" />
     </section>
   </main>
 </template>

@@ -28,3 +28,27 @@ export interface CurrentWeather {
     speed: number;
   };
 }
+
+export interface ForecastResponse {
+  list: ForecastItem[];
+  city: {
+    name: string;
+    country: string;
+    timezone: number;
+  };
+}
+
+export interface ForecastItem {
+  dt: number;
+  dt_txt: string;
+  main: {
+    temp: number;
+  };
+}
+
+export interface ChartPoint {
+  label: string;
+  temp: number;
+}
+
+export type ForecastMode = 'day' | 'week';
