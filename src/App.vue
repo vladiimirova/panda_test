@@ -2,9 +2,11 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import ConfirmModal from './components/ConfirmModal.vue';
 import LanguageToggle from './components/LanguageToggle.vue';
+import ThemeToggle from './components/ThemeToggle.vue';
 import WeatherBlock from './components/WeatherBlock.vue';
 import { getInitialLanguage, translations } from './i18n';
 import { getUserCityByIp } from './services/ipLocation';
+import { getInitialTheme } from './theme';
 import type { CitySuggestion } from './types/weather';
 import { getCityKey, loadFavorites, saveFavorites } from './utils/favorites';
 
@@ -23,6 +25,7 @@ const showFavoritesLimitModal = ref(false);
 const isDetectingUserCity = ref(false);
 const userCityError = ref('');
 const language = ref(getInitialLanguage());
+const theme = ref(getInitialTheme());
 let nextBlockId = 2;
 
 const canAddBlock = computed(() => blocks.value.length < maxBlocks);
@@ -30,6 +33,10 @@ const copy = computed(() => translations[language.value]);
 
 watch(language, (value) => {
   localStorage.setItem('weather-language', value);
+});
+
+watch(theme, (value) => {
+  localStorage.setItem('weather-theme', value);
 });
 
 watch(
@@ -110,7 +117,7 @@ const deleteMessage = computed(() => {
 </script>
 
 <template>
-  <main class="weather-page">
+  <main class="weather-page" :class="`theme-${theme}`">
     <section class="weather-shell" aria-labelledby="page-title">
       <header class="app-header">
         <div class="intro">
@@ -121,6 +128,7 @@ const deleteMessage = computed(() => {
 
         <div class="header-actions">
           <LanguageToggle v-model="language" :copy="copy.language" />
+          <ThemeToggle v-model="theme" :copy="copy.theme" />
           <button class="add-block-button" type="button" :disabled="!canAddBlock" @click="addBlock">
             +
           </button>

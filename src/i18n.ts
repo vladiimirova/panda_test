@@ -25,6 +25,11 @@ export const translations = {
       uk: 'Укр',
       en: 'Eng',
     },
+    theme: {
+      label: 'Режим відображення',
+      day: 'День',
+      night: 'Ніч',
+    },
     modal: {
       title: 'Підтвердження',
       confirm: 'Видалити',
@@ -93,6 +98,11 @@ export const translations = {
       label: 'Language',
       uk: 'Укр',
       en: 'Eng',
+    },
+    theme: {
+      label: 'Display mode',
+      day: 'Day',
+      night: 'Night',
     },
     modal: {
       title: 'Confirmation',
