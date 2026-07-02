@@ -54,6 +54,12 @@ input {
   align-items: start;
 }
 
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .intro {
   display: grid;
   gap: 10px;
@@ -275,6 +281,31 @@ h2 {
   background: #2e7189;
 }
 
+.language-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border: 1px solid rgba(23, 32, 38, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.language-toggle button {
+  min-width: 56px;
+  height: 40px;
+  border: 0;
+  border-radius: 6px;
+  color: #536168;
+  background: transparent;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.language-toggle button.active {
+  color: #ffffff;
+  background: #2e7189;
+}
+
 .weather-card,
 .chart-card {
   display: grid;
@@ -398,6 +429,15 @@ h2 {
   .app-header,
   .weather-block-header {
     grid-template-columns: 1fr;
+  }
+
+  .header-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .language-toggle {
+    width: 100%;
   }
 
   .add-block-button,

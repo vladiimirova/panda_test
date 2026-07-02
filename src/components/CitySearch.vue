@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { Translation } from '../i18n';
 import type { CitySuggestion } from '../types/weather';
 import { formatCity } from '../utils/formatCity';
 
@@ -7,6 +8,7 @@ const props = defineProps<{
   modelValue: string;
   suggestions: CitySuggestion[];
   isSearching: boolean;
+  copy: Translation['search'];
 }>();
 
 const emit = defineEmits<{
@@ -24,7 +26,7 @@ function handleInput(event: Event) {
 
 <template>
   <form class="search-form" @submit.prevent="emit('submit')">
-    <label for="city">Город</label>
+    <label for="city">{{ copy.label }}</label>
     <div class="search-row">
       <input
         id="city"
@@ -32,12 +34,12 @@ function handleInput(event: Event) {
         name="city"
         type="search"
         autocomplete="address-level2"
-        placeholder="Например, Kyiv"
+        :placeholder="copy.placeholder"
         @input="handleInput"
       />
-      <button type="submit" :disabled="!canSearch">Найти</button>
+      <button type="submit" :disabled="!canSearch">{{ copy.submit }}</button>
     </div>
-    <div v-if="isSearching" class="status-text">Шукаємо міста...</div>
+    <div v-if="isSearching" class="status-text">{{ copy.loading }}</div>
     <ul v-else-if="suggestions.length" class="suggestions">
       <li v-for="suggestion in suggestions" :key="`${suggestion.lat}-${suggestion.lon}`">
         <button type="button" @click="emit('select', suggestion)">

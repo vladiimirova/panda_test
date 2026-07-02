@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Chart, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip } from 'chart.js';
 import { onBeforeUnmount, ref, watch } from 'vue';
+import type { Translation } from '../i18n';
 import type { ChartPoint, ForecastMode } from '../types/weather';
 
 Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
@@ -9,13 +10,14 @@ const props = defineProps<{
   points: ChartPoint[];
   mode: ForecastMode;
   isLoading: boolean;
+  copy: Translation['chart'];
 }>();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 let chart: Chart<'line'> | null = null;
 
 watch(
-  () => [props.points, props.mode, props.isLoading] as const,
+  () => [props.points, props.mode, props.isLoading, props.copy] as const,
   () => {
     if (props.isLoading || !canvas.value || props.points.length === 0) {
       chart?.destroy();
@@ -27,7 +29,7 @@ watch(
       labels: props.points.map((point) => point.label),
       datasets: [
         {
-          label: props.mode === 'day' ? 'Температура по годинах' : 'Середня температура',
+          label: props.mode === 'day' ? props.copy.dayDataset : props.copy.weekDataset,
           data: props.points.map((point) => point.temp),
           borderColor: '#2e7189',
           backgroundColor: 'rgba(46, 113, 137, 0.14)',
@@ -77,14 +79,14 @@ onBeforeUnmount(() => {
 <template>
   <section class="chart-card">
     <div>
-      <p class="card-label">Графік температури</p>
-      <h2>{{ mode === 'day' ? 'Сьогодні по годинах' : 'Середня за 5 днів' }}</h2>
+      <p class="card-label">{{ copy.title }}</p>
+      <h2>{{ mode === 'day' ? copy.dayTitle : copy.weekTitle }}</h2>
     </div>
 
-    <p v-if="isLoading" class="status-text">Завантажуємо прогноз...</p>
-    <p v-else-if="!points.length" class="status-text">Графік з'явиться після вибору міста.</p>
+    <p v-if="isLoading" class="status-text">{{ copy.loading }}</p>
+    <p v-else-if="!points.length" class="status-text">{{ copy.empty }}</p>
     <div v-else class="chart-wrap">
-      <canvas ref="canvas" aria-label="Графік температури"></canvas>
+      <canvas ref="canvas" :aria-label="copy.aria"></canvas>
     </div>
   </section>
 </template>

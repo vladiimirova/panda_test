@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { Translation } from '../i18n';
 import type { CurrentWeather } from '../types/weather';
 
 const props = defineProps<{
   weather: CurrentWeather | null;
   isLoading: boolean;
+  copy: Translation['card'];
 }>();
 
 const displayCity = computed(() => {
-  if (!props.weather) return 'Город пока не выбран';
+  if (!props.weather) return props.copy.emptyCity;
 
   return `${props.weather.name}, ${props.weather.sys.country}`;
 });
@@ -17,16 +19,16 @@ const displayCity = computed(() => {
 <template>
   <section class="weather-card" aria-live="polite">
     <div>
-      <p class="card-label">Поточна погода</p>
+      <p class="card-label">{{ copy.title }}</p>
       <h2>{{ displayCity }}</h2>
     </div>
-    <p v-if="isLoading" class="status-text">Завантажуємо погоду...</p>
+    <p v-if="isLoading" class="status-text">{{ copy.loading }}</p>
     <div v-else-if="weather" class="weather-details">
       <strong>{{ Math.round(weather.main.temp) }}°C</strong>
       <span>{{ weather.weather[0]?.description }}</span>
-      <span>Вологість: {{ weather.main.humidity }}%</span>
-      <span>Вітер: {{ weather.wind.speed }} м/с</span>
+      <span>{{ copy.humidity }}: {{ weather.main.humidity }}%</span>
+      <span>{{ copy.wind }}: {{ weather.wind.speed }} {{ copy.windUnit }}</span>
     </div>
-    <p v-else>Тут з'явиться погода після вибору міста.</p>
+    <p v-else>{{ copy.empty }}</p>
   </section>
 </template>

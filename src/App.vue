@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ConfirmModal from './components/ConfirmModal.vue';
+import LanguageToggle from './components/LanguageToggle.vue';
 import WeatherBlock from './components/WeatherBlock.vue';
+import { getInitialLanguage, translations } from './i18n';
 
 interface WeatherBlockItem {
   id: number;
@@ -10,9 +12,15 @@ interface WeatherBlockItem {
 const maxBlocks = 5;
 const blocks = ref<WeatherBlockItem[]>([{ id: 1 }]);
 const blockToDelete = ref<number | null>(null);
+const language = ref(getInitialLanguage());
 let nextBlockId = 2;
 
 const canAddBlock = computed(() => blocks.value.length < maxBlocks);
+const copy = computed(() => translations[language.value]);
+
+watch(language, (value) => {
+  localStorage.setItem('weather-language', value);
+});
 
 function addBlock() {
   if (!canAddBlock.value) return;
@@ -46,7 +54,7 @@ function getBlockNumber(blockId: number) {
 const deleteMessage = computed(() => {
   if (!blockToDelete.value) return '';
 
-  return `Видалити блок погоди #${getBlockNumber(blockToDelete.value)}?`;
+  return copy.value.app.deleteMessage(getBlockNumber(blockToDelete.value));
 });
 </script>
 
@@ -57,23 +65,26 @@ const deleteMessage = computed(() => {
         <div class="intro">
           <p class="eyebrow">OpenWeatherMap</p>
           <h1 id="page-title">Weather App</h1>
-          <p class="intro-text">
-            Введи город, выбери вариант из автокомплита и получи текущую погоду через OpenWeatherMap.
-          </p>
+          <p class="intro-text">{{ copy.app.intro }}</p>
         </div>
 
-        <button class="add-block-button" type="button" :disabled="!canAddBlock" @click="addBlock">
-          +
-        </button>
+        <div class="header-actions">
+          <LanguageToggle v-model="language" :copy="copy.language" />
+          <button class="add-block-button" type="button" :disabled="!canAddBlock" @click="addBlock">
+            +
+          </button>
+        </div>
       </header>
 
-      <p v-if="!canAddBlock" class="status-text">Максимум 5 блоків погоди.</p>
+      <p v-if="!canAddBlock" class="status-text">{{ copy.app.maxBlocks }}</p>
 
       <div class="weather-blocks">
         <WeatherBlock
           v-for="(block, index) in blocks"
           :key="block.id"
-          :title="`Блок ${index + 1}`"
+          :title="copy.app.blockTitle(index + 1)"
+          :language="language"
+          :copy="copy"
           :can-remove="blocks.length > 1"
           @remove="requestDeleteBlock(block.id)"
         />
@@ -82,10 +93,10 @@ const deleteMessage = computed(() => {
 
     <ConfirmModal
       v-if="blockToDelete"
-      title="Підтвердження"
+      :title="copy.modal.title"
       :message="deleteMessage"
-      confirm-label="Видалити"
-      cancel-label="Скасувати"
+      :confirm-label="copy.modal.confirm"
+      :cancel-label="copy.modal.cancel"
       @confirm="confirmDeleteBlock"
       @cancel="cancelDeleteBlock"
     />

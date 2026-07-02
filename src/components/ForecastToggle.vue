@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { ForecastMode } from '../types/weather';
+import type { Translation } from '../i18n';
 
 defineProps<{
   modelValue: ForecastMode;
+  copy: Translation['forecast'];
 }>();
 
 const emit = defineEmits<{
@@ -11,20 +13,20 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="forecast-toggle" aria-label="Перемикання прогнозу">
+  <div class="forecast-toggle" :aria-label="copy.aria">
     <button
       type="button"
       :class="{ active: modelValue === 'day' }"
       @click="emit('update:modelValue', 'day')"
     >
-      День
+      {{ copy.day }}
     </button>
     <button
       type="button"
       :class="{ active: modelValue === 'week' }"
       @click="emit('update:modelValue', 'week')"
     >
-      5 днів
+      {{ copy.week }}
     </button>
   </div>
 </template>

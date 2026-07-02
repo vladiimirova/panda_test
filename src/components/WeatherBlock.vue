@@ -4,14 +4,17 @@ import CitySearch from './CitySearch.vue';
 import ForecastToggle from './ForecastToggle.vue';
 import WeatherChart from './WeatherChart.vue';
 import WeatherCard from './WeatherCard.vue';
+import type { Language, Translation } from '../i18n';
 import { getCurrentWeather, getForecast, searchCities } from '../services/openWeather';
 import { buildTodayPoints, buildWeekPoints } from '../utils/forecast';
 import { formatCity } from '../utils/formatCity';
 import type { CitySuggestion, CurrentWeather, ForecastMode, ForecastResponse } from '../types/weather';
 
-defineProps<{
+const props = defineProps<{
   title: string;
   canRemove: boolean;
+  language: Language;
+  copy: Translation;
 }>();
 
 const emit = defineEmits<{
@@ -35,8 +38,8 @@ const chartPoints = computed(() => {
   if (!forecast.value) return [];
 
   return forecastMode.value === 'day'
-    ? buildTodayPoints(forecast.value.list)
-    : buildWeekPoints(forecast.value.list);
+    ? buildTodayPoints(forecast.value.list, props.language)
+    : buildWeekPoints(forecast.value.list, props.language);
 });
 
 watch(city, (value) => {
@@ -53,9 +56,8 @@ watch(city, (value) => {
     isSearching.value = true;
     try {
       suggestions.value = await searchCities(value);
-    } catch (requestError) {
-      error.value =
-        requestError instanceof Error ? requestError.message : 'Не вдалося знайти місто.';
+    } catch {
+      error.value = props.copy.errors.citySearch;
     } finally {
       isSearching.value = false;
     }
@@ -92,7 +94,7 @@ async function submitSearch() {
     : await searchCities(city.value);
 
   if (!firstSuggestion) {
-    error.value = 'Місто не знайдено.';
+    error.value = props.copy.errors.cityNotFound;
     return;
   }
 
@@ -105,19 +107,26 @@ async function loadWeather(cityToLoad: CitySuggestion) {
   error.value = '';
   try {
     const [currentWeather, cityForecast] = await Promise.all([
-      getCurrentWeather(cityToLoad),
-      getForecast(cityToLoad),
+      getCurrentWeather(cityToLoad, props.language),
+      getForecast(cityToLoad, props.language),
     ]);
     weather.value = currentWeather;
     forecast.value = cityForecast;
-  } catch (requestError) {
-    error.value =
-      requestError instanceof Error ? requestError.message : 'Не вдалося завантажити погоду.';
+  } catch {
+    error.value = props.copy.errors.weatherLoad;
   } finally {
     isLoadingWeather.value = false;
     isLoadingForecast.value = false;
   }
 }
+
+watch(
+  () => props.language,
+  async () => {
+    if (!selectedCity.value) return;
+    await loadWeather(selectedCity.value);
+  },
+);
 </script>
 
 <template>
@@ -128,7 +137,7 @@ async function loadWeather(cityToLoad: CitySuggestion) {
         v-if="canRemove"
         class="remove-block-button"
         type="button"
-        aria-label="Видалити блок"
+        :aria-label="copy.actions.removeBlock"
         @click="emit('remove')"
       >
         ×
@@ -139,6 +148,7 @@ async function loadWeather(cityToLoad: CitySuggestion) {
       :model-value="city"
       :suggestions="suggestions"
       :is-searching="isSearching"
+      :copy="copy.search"
       @update:model-value="updateCity"
       @select="selectCity"
       @submit="submitSearch"
@@ -146,8 +156,13 @@ async function loadWeather(cityToLoad: CitySuggestion) {
 
     <p v-if="error" class="error-message">{{ error }}</p>
 
-    <ForecastToggle v-model="forecastMode" />
-    <WeatherCard :weather="weather" :is-loading="isLoadingWeather" />
-    <WeatherChart :points="chartPoints" :mode="forecastMode" :is-loading="isLoadingForecast" />
+    <ForecastToggle v-model="forecastMode" :copy="copy.forecast" />
+    <WeatherCard :weather="weather" :is-loading="isLoadingWeather" :copy="copy.card" />
+    <WeatherChart
+      :points="chartPoints"
+      :mode="forecastMode"
+      :is-loading="isLoadingForecast"
+      :copy="copy.chart"
+    />
   </article>
 </template>
