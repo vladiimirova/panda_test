@@ -9,16 +9,20 @@ import { getCurrentWeather, getForecast, searchCities } from '../services/openWe
 import { buildTodayPoints, buildWeekPoints } from '../utils/forecast';
 import { formatCity } from '../utils/formatCity';
 import type { CitySuggestion, CurrentWeather, ForecastMode, ForecastResponse } from '../types/weather';
+import { getCityKey } from '../utils/favorites';
 
 const props = defineProps<{
   title: string;
   canRemove: boolean;
   language: Language;
   copy: Translation;
+  favoriteCities: CitySuggestion[];
+  fixedCity?: CitySuggestion;
 }>();
 
 const emit = defineEmits<{
   remove: [];
+  toggleFavorite: [city: CitySuggestion];
 }>();
 
 const city = ref('');
@@ -34,6 +38,14 @@ const error = ref('');
 let searchTimer: number | undefined;
 let skipNextSearch = false;
 
+const isReadonly = computed(() => Boolean(props.fixedCity));
+const isFavorite = computed(() => {
+  if (!selectedCity.value) return false;
+
+  const cityKey = getCityKey(selectedCity.value);
+  return props.favoriteCities.some((favorite) => getCityKey(favorite) === cityKey);
+});
+
 const chartPoints = computed(() => {
   if (!forecast.value) return [];
 
@@ -42,7 +54,21 @@ const chartPoints = computed(() => {
     : buildWeekPoints(forecast.value.list, props.language);
 });
 
+watch(
+  () => props.fixedCity,
+  async (fixedCity) => {
+    if (!fixedCity) return;
+
+    selectedCity.value = fixedCity;
+    city.value = formatCity(fixedCity);
+    await loadWeather(fixedCity);
+  },
+  { immediate: true },
+);
+
 watch(city, (value) => {
+  if (isReadonly.value) return;
+
   window.clearTimeout(searchTimer);
   if (skipNextSearch) {
     skipNextSearch = false;
@@ -123,10 +149,15 @@ async function loadWeather(cityToLoad: CitySuggestion) {
 watch(
   () => props.language,
   async () => {
-    if (!selectedCity.value) return;
-    await loadWeather(selectedCity.value);
+  if (!selectedCity.value) return;
+  await loadWeather(selectedCity.value);
   },
 );
+
+function toggleFavorite() {
+  if (!selectedCity.value) return;
+  emit('toggleFavorite', selectedCity.value);
+}
 </script>
 
 <template>
@@ -134,7 +165,7 @@ watch(
     <header class="weather-block-header">
       <h2>{{ title }}</h2>
       <button
-        v-if="canRemove"
+        v-if="canRemove && !isReadonly"
         class="remove-block-button"
         type="button"
         :aria-label="copy.actions.removeBlock"
@@ -145,6 +176,7 @@ watch(
     </header>
 
     <CitySearch
+      v-if="!isReadonly"
       :model-value="city"
       :suggestions="suggestions"
       :is-searching="isSearching"
@@ -157,7 +189,14 @@ watch(
     <p v-if="error" class="error-message">{{ error }}</p>
 
     <ForecastToggle v-model="forecastMode" :copy="copy.forecast" />
-    <WeatherCard :weather="weather" :is-loading="isLoadingWeather" :copy="copy.card" />
+    <WeatherCard
+      :weather="weather"
+      :is-loading="isLoadingWeather"
+      :copy="copy.card"
+      :is-favorite="isFavorite"
+      :can-toggle-favorite="Boolean(selectedCity)"
+      @toggle-favorite="toggleFavorite"
+    />
     <WeatherChart
       :points="chartPoints"
       :mode="forecastMode"

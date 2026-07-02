@@ -7,6 +7,12 @@ const props = defineProps<{
   weather: CurrentWeather | null;
   isLoading: boolean;
   copy: Translation['card'];
+  isFavorite: boolean;
+  canToggleFavorite: boolean;
+}>();
+
+const emit = defineEmits<{
+  toggleFavorite: [];
 }>();
 
 const displayCity = computed(() => {
@@ -17,10 +23,22 @@ const displayCity = computed(() => {
 </script>
 
 <template>
-  <section class="weather-card" aria-live="polite">
-    <div>
-      <p class="card-label">{{ copy.title }}</p>
-      <h2>{{ displayCity }}</h2>
+  <section class="weather-card" :class="{ favorite: isFavorite }" aria-live="polite">
+    <div class="weather-card-header">
+      <div>
+        <p class="card-label">{{ copy.title }}</p>
+        <h2>{{ displayCity }}</h2>
+      </div>
+      <button
+        v-if="weather && canToggleFavorite"
+        class="favorite-button"
+        type="button"
+        :aria-label="isFavorite ? copy.removeFavorite : copy.addFavorite"
+        :title="isFavorite ? copy.removeFavorite : copy.addFavorite"
+        @click="emit('toggleFavorite')"
+      >
+        {{ isFavorite ? '★' : '☆' }}
+      </button>
     </div>
     <p v-if="isLoading" class="status-text">{{ copy.loading }}</p>
     <div v-else-if="weather" class="weather-details">

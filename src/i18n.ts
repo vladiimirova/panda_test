@@ -10,6 +10,13 @@ export const translations = {
       maxBlocks: 'Максимум 5 блоків погоди.',
       blockTitle: (index: number) => `Блок ${index}`,
       deleteMessage: (index: number) => `Видалити блок погоди #${index}?`,
+      weatherTab: 'Погода',
+      favoritesTab: 'Вибране',
+      favoritesEmpty: 'Додайте місто в обране, щоб бачити його тут.',
+      favoritesLimitTitle: 'Ліміт обраного',
+      favoritesLimitMessage:
+        'Для додавання видаліть місто з обраного, тому що максимум 5.',
+      favoritesLimitConfirm: 'Зрозуміло',
     },
     language: {
       label: 'Мова',
@@ -40,6 +47,8 @@ export const translations = {
       wind: 'Вітер',
       windUnit: 'м/с',
       empty: "Тут з'явиться погода після вибору міста.",
+      addFavorite: 'Додати в обране',
+      removeFavorite: 'Видалити з обраного',
     },
     chart: {
       title: 'Графік температури',
@@ -58,6 +67,7 @@ export const translations = {
     },
     actions: {
       removeBlock: 'Видалити блок',
+      favoriteCity: 'Обране місто',
     },
   },
   en: {
@@ -67,6 +77,13 @@ export const translations = {
       maxBlocks: 'Maximum 5 weather blocks.',
       blockTitle: (index: number) => `Block ${index}`,
       deleteMessage: (index: number) => `Delete weather block #${index}?`,
+      weatherTab: 'Weather',
+      favoritesTab: 'Favorites',
+      favoritesEmpty: 'Add a city to favorites to see it here.',
+      favoritesLimitTitle: 'Favorites limit',
+      favoritesLimitMessage:
+        'Remove a city from favorites before adding another one because the maximum is 5.',
+      favoritesLimitConfirm: 'Got it',
     },
     language: {
       label: 'Language',
@@ -97,6 +114,8 @@ export const translations = {
       wind: 'Wind',
       windUnit: 'm/s',
       empty: 'Weather will appear here after city selection.',
+      addFavorite: 'Add to favorites',
+      removeFavorite: 'Remove from favorites',
     },
     chart: {
       title: 'Temperature chart',
@@ -115,6 +134,7 @@ export const translations = {
     },
     actions: {
       removeBlock: 'Remove block',
+      favoriteCity: 'Favorite city',
     },
   },
 };
