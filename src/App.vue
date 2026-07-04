@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import ConfirmModal from './components/ConfirmModal/ConfirmModal.vue';
 import LanguageToggle from './components/LanguageToggle/LanguageToggle.vue';
 import ThemeToggle from './components/ThemeToggle/ThemeToggle.vue';
@@ -30,6 +30,7 @@ const isMobileMenuOpen = ref(false);
 const language = ref(getInitialLanguage());
 const theme = ref(getInitialTheme());
 let nextBlockId = Math.max(...blocks.value.map((block) => block.id), 0) + 1;
+let previousBodyOverflow = '';
 
 const canAddBlock = computed(() => blocks.value.length < maxBlocks);
 const copy = computed(() => translations[language.value]);
@@ -40,6 +41,16 @@ watch(language, (value) => {
 
 watch(theme, (value) => {
   localStorage.setItem('weather-theme', value);
+});
+
+watch(isMobileMenuOpen, (isOpen) => {
+  if (isOpen) {
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+
+  document.body.style.overflow = previousBodyOverflow;
 });
 
 watch(
@@ -72,6 +83,10 @@ onMounted(async () => {
   } finally {
     isDetectingUserCity.value = false;
   }
+});
+
+onUnmounted(() => {
+  document.body.style.overflow = previousBodyOverflow;
 });
 
 function addBlock() {
@@ -173,6 +188,7 @@ function goHome() {
         </div>
 
         <button
+          v-show="!isMobileMenuOpen"
           class="add-block-button mobile-add-button"
           type="button"
           :aria-disabled="!canAddBlock"
