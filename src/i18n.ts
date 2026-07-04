@@ -48,11 +48,12 @@ export const translations = {
     forecast: {
       aria: 'Перемикання прогнозу',
       day: 'День',
-      week: 'Тиждень',
+      week: '5 днів',
     },
     card: {
       emptyCity: 'Місто поки не вибрано',
       title: 'Поточна погода',
+      forecastTitle: (day: string) => `Прогноз на ${day}`,
       loading: 'Завантажуємо погоду...',
       humidity: 'Вологість',
       wind: 'Вітер',
@@ -64,9 +65,9 @@ export const translations = {
     chart: {
       title: 'Графік температури',
       dayTitle: 'День по годинах',
-      weekTitle: 'Прогноз на тиждень',
+      weekTitle: 'Прогноз на 5 днів',
       dayDataset: 'Температура по годинах',
-      weekDataset: 'Температура за тиждень',
+      weekDataset: 'Температура за 5 днів',
       loading: 'Завантажуємо прогноз...',
       empty: "Графік з'явиться після вибору міста.",
       aria: 'Графік температури',
@@ -126,11 +127,12 @@ export const translations = {
     forecast: {
       aria: 'Forecast switcher',
       day: 'Day',
-      week: 'Week',
+      week: '5 days',
     },
     card: {
       emptyCity: 'No city selected yet',
       title: 'Current weather',
+      forecastTitle: (day: string) => `Forecast for ${day}`,
       loading: 'Loading weather...',
       humidity: 'Humidity',
       wind: 'Wind',
@@ -142,9 +144,9 @@ export const translations = {
     chart: {
       title: 'Temperature chart',
       dayTitle: 'Day by hour',
-      weekTitle: 'Weekly forecast',
+      weekTitle: '5-day forecast',
       dayDataset: 'Hourly temperature',
-      weekDataset: 'Weekly temperature',
+      weekDataset: '5-day temperature',
       loading: 'Loading forecast...',
       empty: 'Chart will appear after city selection.',
       aria: 'Temperature chart',

@@ -38,6 +38,7 @@ const isLoadingWeather = ref(false);
 const isLoadingForecast = ref(false);
 const error = ref('');
 const isEditingCity = ref(false);
+const selectedWeekPointIndex = ref(0);
 let searchTimer: number | undefined;
 let skipNextSearch = false;
 let initialCityKey = '';
@@ -61,6 +62,46 @@ const chartPoints = computed(() => {
     ? buildDayPoints(forecast.value.list, props.language, forecast.value.city.timezone)
     : buildWeekPoints(forecast.value.list, props.language, forecast.value.city.timezone);
 });
+const selectedWeekPoint = computed(() =>
+  forecastMode.value === 'week' ? chartPoints.value[selectedWeekPointIndex.value] : null,
+);
+const displayedWeather = computed(() => {
+  if (forecastMode.value !== 'week' || !selectedWeekPoint.value || !forecast.value) {
+    return weather.value;
+  }
+
+  const dayItems = forecast.value.list.filter((item) =>
+    item.dt_txt.startsWith(`${selectedWeekPoint.value?.date} `),
+  );
+  if (!dayItems.length) return weather.value;
+
+  const average = (values: number[]) =>
+    values.reduce((sum, value) => sum + value, 0) / values.length;
+  const representativeItem =
+    dayItems.find((item) => item.dt_txt.includes('12:00:00')) ?? dayItems[Math.floor(dayItems.length / 2)];
+
+  return {
+    name: forecast.value.city.name,
+    sys: {
+      country: forecast.value.city.country,
+    },
+    main: {
+      temp: average(dayItems.map((item) => item.main.temp)),
+      feels_like: average(dayItems.map((item) => item.main.feels_like)),
+      humidity: Math.round(average(dayItems.map((item) => item.main.humidity))),
+      pressure: Math.round(average(dayItems.map((item) => item.main.pressure))),
+    },
+    weather: representativeItem.weather,
+    wind: {
+      speed: average(dayItems.map((item) => item.wind.speed)),
+    },
+  };
+});
+const cardTitle = computed(() =>
+  forecastMode.value === 'week' && selectedWeekPoint.value
+    ? props.copy.card.forecastTitle(selectedWeekPoint.value.label)
+    : props.copy.card.title,
+);
 
 watch(
   () => props.fixedCity,
@@ -192,6 +233,17 @@ function showCitySearch() {
   isEditingCity.value = true;
   suggestions.value = [];
 }
+
+function selectChartPoint(index: number) {
+  selectedWeekPointIndex.value = index;
+}
+
+watch(
+  () => [forecastMode.value, forecast.value] as const,
+  () => {
+    selectedWeekPointIndex.value = 0;
+  },
+);
 </script>
 
 <template>
@@ -233,10 +285,22 @@ function showCitySearch() {
     <p v-if="error" class="error-message">{{ error }}</p>
 
     <ForecastToggle v-model="forecastMode" :copy="copy.forecast" />
+    <div v-if="forecastMode === 'week' && chartPoints.length" class="forecast-days">
+      <button
+        v-for="(point, index) in chartPoints"
+        :key="point.date || point.label"
+        type="button"
+        :class="{ active: index === selectedWeekPointIndex }"
+        @click="selectChartPoint(index)"
+      >
+        {{ point.label }}
+      </button>
+    </div>
     <WeatherCard
-      :weather="weather"
+      :weather="displayedWeather"
       :is-loading="isLoadingWeather"
       :copy="copy.card"
+      :title="cardTitle"
       :is-favorite="isFavorite"
       :can-toggle-favorite="Boolean(selectedCity)"
       @toggle-favorite="toggleFavorite"
@@ -246,6 +310,7 @@ function showCitySearch() {
       :mode="forecastMode"
       :is-loading="isLoadingForecast"
       :copy="copy.chart"
+      @select-point="selectChartPoint"
     />
   </article>
 </template>

@@ -201,6 +201,7 @@ function goHome() {
 
         <button
           class="menu-toggle-button"
+          :class="{ 'menu-toggle-open': isMobileMenuOpen }"
           type="button"
           :aria-expanded="isMobileMenuOpen"
           aria-controls="app-menu"

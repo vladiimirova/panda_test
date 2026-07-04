@@ -8,7 +8,7 @@ A responsive Vue 3 weather application built with Vite, OpenWeatherMap, and Char
 - Weather requests through `fetch`.
 - Current weather card for the selected city.
 - Hourly temperature chart for the current day with Chart.js, without `vue-chartjs`.
-- Forecast switch between day and week views.
+- Forecast switch between day and 5-day views.
 - Up to 5 independent weather blocks.
 - Weather block removal with a confirmation modal.
 - Favorites tab with cities saved in `localStorage`.

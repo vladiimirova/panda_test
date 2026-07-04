@@ -306,6 +306,13 @@
     display: grid;
   }
 
+  .menu-toggle-button.menu-toggle-open {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 7;
+  }
+
   .add-block-button.mobile-add-button {
     position: relative;
     z-index: 6;
@@ -336,6 +343,8 @@
     width: min(100%, 340px);
     margin-inline: auto;
     display: grid;
+    justify-items: center;
+    justify-content: center;
     gap: 18px;
     padding: 22px;
     border: 1px solid var(--border-soft);
@@ -349,7 +358,8 @@
   }
 
   .tabs {
-    width: 100%;
+    width: min(100%, 280px);
+    justify-self: center;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     padding: 6px;
     background: var(--surface-control);
@@ -369,9 +379,10 @@
   }
 
   .header-actions {
-    width: 100%;
+    width: max-content;
+    justify-self: center;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto auto;
     align-items: center;
     justify-items: center;
     justify-content: center;
@@ -393,6 +404,11 @@
 
   .mobile-actions {
     display: grid;
+  }
+
+  .app-menu-panel .language-toggle,
+  .app-menu-panel .theme-toggle {
+    justify-self: center;
   }
 
   .app-menu-panel .add-block-button {

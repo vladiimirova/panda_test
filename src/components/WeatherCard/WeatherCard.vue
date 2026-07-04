@@ -7,6 +7,7 @@ const props = defineProps<{
   weather: CurrentWeather | null;
   isLoading: boolean;
   copy: Translation['card'];
+  title?: string;
   isFavorite: boolean;
   canToggleFavorite: boolean;
 }>();
@@ -26,7 +27,7 @@ const displayCity = computed(() => {
   <section class="weather-card" :class="{ favorite: isFavorite }" aria-live="polite">
     <div class="weather-card-header">
       <div>
-        <p class="card-label">{{ copy.title }}</p>
+        <p class="card-label">{{ title || copy.title }}</p>
         <h2>{{ displayCity }}</h2>
       </div>
       <button

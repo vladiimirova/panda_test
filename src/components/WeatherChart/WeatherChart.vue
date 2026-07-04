@@ -13,6 +13,10 @@ const props = defineProps<{
   copy: Translation['chart'];
 }>();
 
+const emit = defineEmits<{
+  selectPoint: [index: number];
+}>();
+
 const canvas = ref<HTMLCanvasElement | null>(null);
 let chart: Chart<'line'> | null = null;
 
@@ -37,6 +41,8 @@ watch(
           borderColor: '#2e7189',
           backgroundColor: 'rgba(46, 113, 137, 0.14)',
           pointBackgroundColor: '#d9783f',
+          pointRadius: 3,
+          pointHoverRadius: 7,
           tension: 0.35,
         },
       ],
@@ -54,6 +60,12 @@ watch(
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        onClick: (_event, elements) => {
+          const [element] = elements;
+          if (props.mode === 'week' && element) {
+            emit('selectPoint', element.index);
+          }
+        },
         plugins: {
           tooltip: {
             callbacks: {

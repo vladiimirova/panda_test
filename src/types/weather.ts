@@ -43,12 +43,25 @@ export interface ForecastItem {
   dt_txt: string;
   main: {
     temp: number;
+    feels_like: number;
+    humidity: number;
+    pressure: number;
+  };
+  weather: Array<{
+    id: number;
+    main: string;
+    description: string;
+    icon: string;
+  }>;
+  wind: {
+    speed: number;
   };
 }
 
 export interface ChartPoint {
   label: string;
   temp: number | null;
+  date?: string;
 }
 
 export type ForecastMode = 'day' | 'week';

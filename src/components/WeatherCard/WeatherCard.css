@@ -60,11 +60,19 @@
 }
 
 @media (max-width: 560px) {
+  .weather-card {
+    padding: 16px;
+  }
+
   .weather-details {
     grid-template-columns: 1fr 1fr;
   }
 
   .weather-card-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .favorite-button {
+    justify-self: end;
   }
 }

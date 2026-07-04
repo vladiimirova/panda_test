@@ -35,10 +35,11 @@ export function buildWeekPoints(
   }, {});
 
   return Object.entries(grouped)
-    .slice(0, 7)
+    .slice(0, 5)
     .map(([date, temps]) => ({
       label: formatDay(date, language),
       temp: Math.round(temps.reduce((sum, temp) => sum + temp, 0) / temps.length),
+      date,
     }));
 }
 

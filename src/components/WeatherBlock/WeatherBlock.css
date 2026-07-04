@@ -46,6 +46,31 @@
   cursor: pointer;
 }
 
+.forecast-days {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.forecast-days button {
+  min-width: max-content;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--surface-control);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.forecast-days button.active {
+  border-color: #2e7189;
+  color: #ffffff;
+  background: #2e7189;
+}
+
 .error-message {
   padding: 12px 14px;
   border: 1px solid rgba(170, 52, 52, 0.24);
@@ -55,9 +80,18 @@
 }
 
 @media (max-width: 560px) {
+  .weather-block {
+    justify-items: stretch;
+    padding: 14px;
+  }
+
   .weather-block-header {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
+  }
+
+  .remove-block-button {
+    justify-self: end;
   }
 
   .change-city-button {
