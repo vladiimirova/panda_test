@@ -1,27 +1,70 @@
 # Weather App
 
-Weather App на Vue 3 + Vite без CSS-фреймворков и UI-библиотек.
+A responsive Vue 3 weather application built with Vite, OpenWeatherMap, and Chart.js. The project uses plain CSS only, without CSS frameworks or UI libraries.
 
-## Запуск
+## Features
+
+- City search with autocomplete.
+- Weather requests through `fetch`.
+- Current weather card for the selected city.
+- Hourly temperature chart for the current day with Chart.js, without `vue-chartjs`.
+- Forecast switch between day and week views.
+- Up to 5 independent weather blocks.
+- Weather block removal with a confirmation modal.
+- Favorites tab with cities saved in `localStorage`.
+- Favorite city limit of 5 items with a modal warning.
+- Default user weather based on IP city detection.
+- Loading states for API requests.
+- Ukrainian and English interface languages, including API response language.
+- Day and night visual themes.
+- Responsive layout with a 1200px main container and 360px minimum width.
+
+## Tech Stack
+
+- Vue 3
+- TypeScript
+- Vite
+- Chart.js
+- OpenWeatherMap API
+
+## Getting Started
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Create a local environment file from the example:
+
+```bash
+cp .env.example .env
+```
+
+Add your OpenWeatherMap API key:
+
+```bash
+VITE_OPENWEATHER_API_KEY=your_api_key_here
+```
+
+Run the development server:
+
+```bash
 npm run dev
 ```
 
-Для работы с OpenWeatherMap нужно создать `.env` по примеру `.env.example`.
+Build the project:
 
-## Реализовано
+```bash
+npm run build
+```
 
-- OpenWeatherMap API через `fetch`.
-- Автокомплит городов.
-- Карточка текущей погоды.
-- График температуры через Chart.js без `vue-chartjs`.
-- Переключение прогноза: день / 5 дней.
-- До 5 независимых weather-блоков.
-- Удаление блоков через модальное подтверждение.
-- Вкладка избранного с сохранением в `localStorage`.
-- Лимит избранных городов до 5 с модальным сообщением.
-- Определение города пользователя по IP.
-- Мультиязычность `uk/en` для интерфейса и ответов API.
-- Бонус: режим отображения день / ночь.
+## Deployment
+
+For Vercel, add the same environment variable in the project settings:
+
+```bash
+VITE_OPENWEATHER_API_KEY=your_api_key_here
+```
+
+After changing environment variables, redeploy the project so Vercel can rebuild the client bundle.

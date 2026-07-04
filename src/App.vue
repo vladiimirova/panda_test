@@ -142,13 +142,22 @@ function selectTab(tab: 'weather' | 'favorites') {
   activeTab.value = tab;
   isMobileMenuOpen.value = false;
 }
+
+function goHome() {
+  selectTab('weather');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 
 <template>
   <main class="weather-page" :class="`theme-${theme}`">
     <section class="weather-shell" aria-labelledby="page-title">
       <header class="app-header">
-        <div class="brand-logo">
+        <a
+          class="brand-logo"
+          href="#"
+          @click.prevent="goHome"
+        >
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 48 48" focusable="false">
               <path class="brand-sun" d="M35 2.8a2 2 0 0 1 2 2v2.1a2 2 0 0 1-4 0V4.8a2 2 0 0 1 2-2ZM35 22.9a2 2 0 0 1 2 2V27a2 2 0 0 1-4 0v-2.1a2 2 0 0 1 2-2ZM46.2 14.9a2 2 0 0 1-2 2h-2.1a2 2 0 0 1 0-4h2.1a2 2 0 0 1 2 2ZM28 14.9a2 2 0 0 1-2 2h-2.1a2 2 0 0 1 0-4H26a2 2 0 0 1 2 2ZM43 6.9a2 2 0 0 1 0 2.8l-1.5 1.5a2 2 0 1 1-2.8-2.8l1.5-1.5a2 2 0 0 1 2.8 0ZM31.3 18.6a2 2 0 0 1 0 2.8l-1.5 1.5a2 2 0 1 1-2.8-2.8l1.5-1.5a2 2 0 0 1 2.8 0ZM27 6.9a2 2 0 0 1 2.8 0l1.5 1.5a2 2 0 1 1-2.8 2.8L27 9.7a2 2 0 0 1 0-2.8ZM38.7 18.6a2 2 0 0 1 2.8 0L43 20.1a2 2 0 1 1-2.8 2.8l-1.5-1.5a2 2 0 0 1 0-2.8ZM35 8a7 7 0 1 1 0 14 7 7 0 0 1 0-14Z" />
@@ -156,7 +165,23 @@ function selectTab(tab: 'weather' | 'favorites') {
             </svg>
           </span>
           <h1 id="page-title">Weather App</h1>
+        </a>
+
+        <div class="header-actions desktop-actions">
+          <LanguageToggle v-model="language" :copy="copy.language" />
+          <ThemeToggle v-model="theme" :copy="copy.theme" />
         </div>
+
+        <button
+          class="add-block-button mobile-add-button"
+          type="button"
+          :aria-disabled="!canAddBlock"
+          @click="addBlock"
+        >
+          <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
 
         <button
           class="menu-toggle-button"
@@ -178,28 +203,26 @@ function selectTab(tab: 'weather' | 'favorites') {
         class="app-menu"
         :class="{ open: isMobileMenuOpen }"
       >
-        <div class="tabs" role="tablist" aria-label="Weather views">
-          <button
-            type="button"
-            :class="{ active: activeTab === 'weather' }"
-            @click="selectTab('weather')"
-          >
-            {{ copy.app.weatherTab }}
-          </button>
-          <button
-            type="button"
-            :class="{ active: activeTab === 'favorites' }"
-            @click="selectTab('favorites')"
-          >
-            {{ copy.app.favoritesTab }} ({{ favorites.length }})
-          </button>
-        </div>
+        <div class="app-menu-panel">
+          <div class="tabs" role="tablist" aria-label="Weather views">
+            <button
+              type="button"
+              :class="{ active: activeTab === 'weather' }"
+              @click="selectTab('weather')"
+            >
+              {{ copy.app.weatherTab }}
+            </button>
+            <button
+              type="button"
+              :class="{ active: activeTab === 'favorites' }"
+              @click="selectTab('favorites')"
+            >
+              {{ copy.app.favoritesTab }} ({{ favorites.length }})
+            </button>
+          </div>
 
-        <div class="header-actions">
-          <LanguageToggle v-model="language" :copy="copy.language" />
-          <ThemeToggle v-model="theme" :copy="copy.theme" />
           <button
-            class="add-block-button"
+            class="add-block-button menu-add-button"
             type="button"
             :aria-disabled="!canAddBlock"
             @click="addBlock"
@@ -208,6 +231,11 @@ function selectTab(tab: 'weather' | 'favorites') {
               <path d="M12 5v14M5 12h14" />
             </svg>
           </button>
+
+          <div class="header-actions mobile-actions">
+            <LanguageToggle v-model="language" :copy="copy.language" />
+            <ThemeToggle v-model="theme" :copy="copy.theme" />
+          </div>
         </div>
       </div>
 
@@ -243,6 +271,23 @@ function selectTab(tab: 'weather' | 'favorites') {
           />
         </template>
       </div>
+
+      <footer class="app-footer">
+        <a class="footer-logo" href="#" @click.prevent="goHome" aria-label="Back to top">
+          <span class="footer-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" focusable="false">
+              <path class="brand-sun" d="M35 8a7 7 0 1 1 0 14 7 7 0 0 1 0-14Z" />
+              <path class="brand-cloud" d="M16.2 16.2A11.8 11.8 0 0 1 38.4 20a8.3 8.3 0 0 1-1 16.5H13.6a9.7 9.7 0 0 1 2.6-20.3Z" />
+            </svg>
+          </span>
+          <span>Weather App</span>
+        </a>
+
+        <div class="footer-contacts">
+          <a href="tel:+380991234567">+38 (099) 123-45-67</a>
+          <a href="mailto:weather.app@gmail.com">weather.app@gmail.com</a>
+        </div>
+      </footer>
     </section>
 
     <ConfirmModal

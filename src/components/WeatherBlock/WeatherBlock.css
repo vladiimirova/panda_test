@@ -56,7 +56,8 @@
 
 @media (max-width: 560px) {
   .weather-block-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
   }
 
   .change-city-button {
