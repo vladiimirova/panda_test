@@ -1,0 +1,73 @@
+.theme-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface-control);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.theme-toggle button {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: transparent;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.theme-toggle button:hover {
+  color: var(--text-main);
+  background: var(--surface-panel);
+}
+
+.theme-toggle button:focus-visible {
+  outline: 3px solid rgba(46, 113, 137, 0.24);
+  outline-offset: 2px;
+}
+
+.theme-toggle button.active {
+  color: #ffffff;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 44%),
+    #2e7189;
+  box-shadow: 0 8px 20px rgba(46, 113, 137, 0.24);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-icon {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.theme-toggle-icon circle,
+.theme-toggle-icon path:first-child {
+  fill: currentColor;
+  fill-opacity: 0.16;
+}
+
+@media (max-width: 560px) {
+  .theme-toggle {
+    width: max-content;
+  }
+}

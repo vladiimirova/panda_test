@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import ConfirmModal from './components/ConfirmModal.vue';
-import LanguageToggle from './components/LanguageToggle.vue';
-import ThemeToggle from './components/ThemeToggle.vue';
-import WeatherBlock from './components/WeatherBlock.vue';
+import ConfirmModal from './components/ConfirmModal/ConfirmModal.vue';
+import LanguageToggle from './components/LanguageToggle/LanguageToggle.vue';
+import ThemeToggle from './components/ThemeToggle/ThemeToggle.vue';
+import WeatherBlock from './components/WeatherBlock/WeatherBlock.vue';
 import { getInitialLanguage, translations } from './i18n';
 import { getUserCityByIp } from './services/ipLocation';
 import { getInitialTheme } from './theme';

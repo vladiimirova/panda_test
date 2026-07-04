@@ -1,0 +1,29 @@
+.forecast-toggle {
+  width: max-content;
+  max-width: 100%;
+  align-self: start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--surface-control);
+}
+
+.forecast-toggle button {
+  min-width: 96px;
+  height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-muted);
+  background: transparent;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.forecast-toggle button.active {
+  color: #ffffff;
+  background: #2e7189;
+}

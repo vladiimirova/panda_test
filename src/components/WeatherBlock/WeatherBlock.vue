@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import CitySearch from './CitySearch.vue';
-import ForecastToggle from './ForecastToggle.vue';
-import WeatherChart from './WeatherChart.vue';
-import WeatherCard from './WeatherCard.vue';
-import type { Language, Translation } from '../i18n';
-import { getCurrentWeather, getForecast, searchCities } from '../services/openWeather';
-import { buildDayPoints, buildWeekPoints } from '../utils/forecast';
-import { formatCity } from '../utils/formatCity';
-import type { CitySuggestion, CurrentWeather, ForecastMode, ForecastResponse } from '../types/weather';
-import { getCityKey } from '../utils/favorites';
+import CitySearch from '../CitySearch/CitySearch.vue';
+import ForecastToggle from '../ForecastToggle/ForecastToggle.vue';
+import WeatherChart from '../WeatherChart/WeatherChart.vue';
+import WeatherCard from '../WeatherCard/WeatherCard.vue';
+import type { Language, Translation } from '../../i18n';
+import { getCurrentWeather, getForecast, searchCities } from '../../services/openWeather';
+import { buildDayPoints, buildWeekPoints } from '../../utils/forecast';
+import { formatCity } from '../../utils/formatCity';
+import type { CitySuggestion, CurrentWeather, ForecastMode, ForecastResponse } from '../../types/weather';
+import { getCityKey } from '../../utils/favorites';
 
 const props = defineProps<{
   title: string;

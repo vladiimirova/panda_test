@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Translation } from '../i18n';
-import type { ThemeMode } from '../theme';
+import type { Translation } from '../../i18n';
+import type { ThemeMode } from '../../theme';
 
 defineProps<{
   modelValue: ThemeMode;

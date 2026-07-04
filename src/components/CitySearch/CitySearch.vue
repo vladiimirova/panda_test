@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Translation } from '../i18n';
-import type { CitySuggestion } from '../types/weather';
-import { formatCity } from '../utils/formatCity';
+import type { Translation } from '../../i18n';
+import type { CitySuggestion } from '../../types/weather';
+import { formatCity } from '../../utils/formatCity';
 
 const props = defineProps<{
   modelValue: string;

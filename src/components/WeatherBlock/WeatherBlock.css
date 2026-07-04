@@ -1,0 +1,65 @@
+.weather-block {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.weather-block-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.weather-block-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.remove-block-button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #9a382f;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.change-city-button {
+  width: max-content;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--text-main);
+  background: var(--surface-control);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.error-message {
+  padding: 12px 14px;
+  border: 1px solid rgba(170, 52, 52, 0.24);
+  border-radius: 8px;
+  color: #8f2323;
+  background: #fff4f1;
+}
+
+@media (max-width: 560px) {
+  .weather-block-header {
+    grid-template-columns: 1fr;
+  }
+
+  .change-city-button {
+    width: 100%;
+  }
+}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Language, Translation } from '../i18n';
+import type { Language, Translation } from '../../i18n';
 
 defineProps<{
   modelValue: Language;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ForecastMode } from '../types/weather';
-import type { Translation } from '../i18n';
+import type { ForecastMode } from '../../types/weather';
+import type { Translation } from '../../i18n';
 
 defineProps<{
   modelValue: ForecastMode;

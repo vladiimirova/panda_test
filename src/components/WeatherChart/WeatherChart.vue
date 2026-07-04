@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Chart, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip } from 'chart.js';
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
-import type { Translation } from '../i18n';
-import type { ChartPoint, ForecastMode } from '../types/weather';
+import type { Translation } from '../../i18n';
+import type { ChartPoint, ForecastMode } from '../../types/weather';
 
 Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
 

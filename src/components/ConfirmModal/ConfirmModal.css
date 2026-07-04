@@ -1,0 +1,68 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(23, 32, 38, 0.45);
+}
+
+.modal {
+  width: min(100%, 420px);
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  border-radius: 8px;
+  background: var(--surface-control);
+  box-shadow: 0 24px 70px rgba(23, 32, 38, 0.24);
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.modal p {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.secondary-button,
+.primary-button,
+.danger-button {
+  min-width: 112px;
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.secondary-button {
+  color: var(--text-main);
+  background: var(--surface-panel);
+}
+
+.primary-button {
+  color: #ffffff;
+  background: #2e7189;
+}
+
+.danger-button {
+  color: #ffffff;
+  background: #9a382f;
+}
+
+@media (max-width: 560px) {
+  .modal-actions {
+    display: grid;
+  }
+}

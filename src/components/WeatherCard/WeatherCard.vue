@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Translation } from '../i18n';
-import type { CurrentWeather } from '../types/weather';
+import type { Translation } from '../../i18n';
+import type { CurrentWeather } from '../../types/weather';
 
 const props = defineProps<{
   weather: CurrentWeather | null;
