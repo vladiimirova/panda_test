@@ -26,6 +26,7 @@ const showBlocksLimitModal = ref(false);
 const showFavoritesLimitModal = ref(false);
 const isDetectingUserCity = ref(false);
 const userCityError = ref('');
+const isMobileMenuOpen = ref(false);
 const language = ref(getInitialLanguage());
 const theme = ref(getInitialTheme());
 let nextBlockId = Math.max(...blocks.value.map((block) => block.id), 0) + 1;
@@ -74,6 +75,8 @@ onMounted(async () => {
 });
 
 function addBlock() {
+  isMobileMenuOpen.value = false;
+
   if (!canAddBlock.value) {
     showBlocksLimitModal.value = true;
     return;
@@ -134,6 +137,11 @@ const deleteMessage = computed(() => {
 
   return copy.value.app.deleteMessage(getBlockNumber(blockToDelete.value));
 });
+
+function selectTab(tab: 'weather' | 'favorites') {
+  activeTab.value = tab;
+  isMobileMenuOpen.value = false;
+}
 </script>
 
 <template>
@@ -150,6 +158,43 @@ const deleteMessage = computed(() => {
           <h1 id="page-title">Weather App</h1>
         </div>
 
+        <button
+          class="menu-toggle-button"
+          type="button"
+          :aria-expanded="isMobileMenuOpen"
+          aria-controls="app-menu"
+          aria-label="Menu"
+          @click="isMobileMenuOpen = !isMobileMenuOpen"
+        >
+          <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path v-if="!isMobileMenuOpen" d="M4 7h16M4 12h16M4 17h16" />
+            <path v-else d="M6 6l12 12M18 6 6 18" />
+          </svg>
+        </button>
+      </header>
+
+      <div
+        id="app-menu"
+        class="app-menu"
+        :class="{ open: isMobileMenuOpen }"
+      >
+        <div class="tabs" role="tablist" aria-label="Weather views">
+          <button
+            type="button"
+            :class="{ active: activeTab === 'weather' }"
+            @click="selectTab('weather')"
+          >
+            {{ copy.app.weatherTab }}
+          </button>
+          <button
+            type="button"
+            :class="{ active: activeTab === 'favorites' }"
+            @click="selectTab('favorites')"
+          >
+            {{ copy.app.favoritesTab }} ({{ favorites.length }})
+          </button>
+        </div>
+
         <div class="header-actions">
           <LanguageToggle v-model="language" :copy="copy.language" />
           <ThemeToggle v-model="theme" :copy="copy.theme" />
@@ -164,23 +209,6 @@ const deleteMessage = computed(() => {
             </svg>
           </button>
         </div>
-      </header>
-
-      <div class="tabs" role="tablist" aria-label="Weather views">
-        <button
-          type="button"
-          :class="{ active: activeTab === 'weather' }"
-          @click="activeTab = 'weather'"
-        >
-          {{ copy.app.weatherTab }}
-        </button>
-        <button
-          type="button"
-          :class="{ active: activeTab === 'favorites' }"
-          @click="activeTab = 'favorites'"
-        >
-          {{ copy.app.favoritesTab }} ({{ favorites.length }})
-        </button>
       </div>
 
       <div v-if="activeTab === 'weather'" class="weather-blocks">

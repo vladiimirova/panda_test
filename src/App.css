@@ -41,7 +41,15 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 20px;
-  align-items: start;
+  align-items: center;
+}
+
+.app-menu {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .header-actions {
@@ -111,6 +119,18 @@
   opacity: 0.65;
 }
 
+.menu-toggle-button {
+  display: none;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--text-main);
+  background: var(--surface-control);
+  cursor: pointer;
+}
+
 .weather-blocks {
   min-height: 0;
   display: grid;
@@ -159,19 +179,52 @@
 
 @media (max-width: 560px) {
   .weather-shell {
+    grid-template-rows: auto auto minmax(0, 1fr);
     padding: 22px;
+  }
+
+  .app-header {
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  .brand-mark {
+    width: 46px;
+    height: 46px;
+  }
+
+  .brand-mark svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .menu-toggle-button {
+    display: grid;
+  }
+
+  .app-menu {
+    display: none;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    background: var(--surface-soft);
+  }
+
+  .app-menu.open {
+    display: grid;
   }
 
   .tabs {
     width: 100%;
   }
 
-  .app-header {
-    grid-template-columns: 1fr;
+  .tabs button {
+    min-width: 0;
   }
 
   .header-actions {
-    justify-content: flex-start;
+    justify-content: space-between;
   }
 
   .add-block-button {
