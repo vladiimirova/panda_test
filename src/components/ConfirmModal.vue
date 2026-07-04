@@ -1,10 +1,13 @@
 <script setup lang="ts">
-defineProps<{
+withDefaults(defineProps<{
   title: string;
   message: string;
   confirmLabel: string;
-  cancelLabel: string;
-}>();
+  cancelLabel?: string;
+  confirmVariant?: 'primary' | 'danger';
+}>(), {
+  confirmVariant: 'danger',
+});
 
 const emit = defineEmits<{
   confirm: [];
@@ -18,10 +21,14 @@ const emit = defineEmits<{
       <h2 id="modal-title">{{ title }}</h2>
       <p>{{ message }}</p>
       <div class="modal-actions">
-        <button class="secondary-button" type="button" @click="emit('cancel')">
+        <button v-if="cancelLabel" class="secondary-button" type="button" @click="emit('cancel')">
           {{ cancelLabel }}
         </button>
-        <button class="danger-button" type="button" @click="emit('confirm')">
+        <button
+          :class="confirmVariant === 'danger' ? 'danger-button' : 'primary-button'"
+          type="button"
+          @click="emit('confirm')"
+        >
           {{ confirmLabel }}
         </button>
       </div>

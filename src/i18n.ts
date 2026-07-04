@@ -8,9 +8,12 @@ export const translations = {
       intro:
         'Введіть місто, виберіть варіант з автокомпліту та отримайте поточну погоду через OpenWeatherMap.',
       maxBlocks: 'Максимум 5 блоків погоди.',
-      blockTitle: (index: number) => `Блок ${index}`,
+      blocksLimitTitle: 'Ліміт прогнозів',
+      blocksLimitMessage: 'Можна додати максимум 5 прогнозів. Видаліть один, щоб додати новий.',
+      blocksLimitConfirm: 'Зрозуміло',
+      blockTitle: (index: number) => `Прогноз ${index}`,
       deleteMessage: (index: number) => `Видалити блок погоди #${index}?`,
-      weatherTab: 'Погода',
+      weatherTab: 'Головна',
       favoritesTab: 'Вибране',
       favoritesEmpty: 'Додайте місто в обране, щоб бачити його тут.',
       favoritesLimitTitle: 'Ліміт обраного',
@@ -45,7 +48,7 @@ export const translations = {
     forecast: {
       aria: 'Перемикання прогнозу',
       day: 'День',
-      week: '5 днів',
+      week: 'Тиждень',
     },
     card: {
       emptyCity: 'Місто поки не вибрано',
@@ -61,9 +64,9 @@ export const translations = {
     chart: {
       title: 'Графік температури',
       dayTitle: 'День по годинах',
-      weekTitle: 'Середня за 5 днів',
+      weekTitle: 'Прогноз на тиждень',
       dayDataset: 'Температура по годинах',
-      weekDataset: 'Середня температура',
+      weekDataset: 'Температура за тиждень',
       loading: 'Завантажуємо прогноз...',
       empty: "Графік з'явиться після вибору міста.",
       aria: 'Графік температури',
@@ -83,9 +86,12 @@ export const translations = {
       intro:
         'Enter a city, choose a suggestion, and get current weather from OpenWeatherMap.',
       maxBlocks: 'Maximum 5 weather blocks.',
-      blockTitle: (index: number) => `Block ${index}`,
+      blocksLimitTitle: 'Forecast limit',
+      blocksLimitMessage: 'You can add up to 5 forecasts. Remove one before adding another.',
+      blocksLimitConfirm: 'Got it',
+      blockTitle: (index: number) => `Forecast ${index}`,
       deleteMessage: (index: number) => `Delete weather block #${index}?`,
-      weatherTab: 'Weather',
+      weatherTab: 'Home',
       favoritesTab: 'Favorites',
       favoritesEmpty: 'Add a city to favorites to see it here.',
       favoritesLimitTitle: 'Favorites limit',
@@ -120,7 +126,7 @@ export const translations = {
     forecast: {
       aria: 'Forecast switcher',
       day: 'Day',
-      week: '5 days',
+      week: 'Week',
     },
     card: {
       emptyCity: 'No city selected yet',
@@ -136,9 +142,9 @@ export const translations = {
     chart: {
       title: 'Temperature chart',
       dayTitle: 'Day by hour',
-      weekTitle: 'Average for 5 days',
+      weekTitle: 'Weekly forecast',
       dayDataset: 'Hourly temperature',
-      weekDataset: 'Average temperature',
+      weekDataset: 'Weekly temperature',
       loading: 'Loading forecast...',
       empty: 'Chart will appear after city selection.',
       aria: 'Temperature chart',

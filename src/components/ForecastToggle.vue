@@ -17,6 +17,7 @@ const emit = defineEmits<{
     <button
       type="button"
       :class="{ active: modelValue === 'day' }"
+      :aria-pressed="modelValue === 'day'"
       @click="emit('update:modelValue', 'day')"
     >
       {{ copy.day }}
@@ -24,6 +25,7 @@ const emit = defineEmits<{
     <button
       type="button"
       :class="{ active: modelValue === 'week' }"
+      :aria-pressed="modelValue === 'week'"
       @click="emit('update:modelValue', 'week')"
     >
       {{ copy.week }}

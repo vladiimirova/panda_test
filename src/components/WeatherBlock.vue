@@ -52,6 +52,7 @@ const isFavorite = computed(() => {
   const cityKey = getCityKey(selectedCity.value);
   return props.favoriteCities.some((favorite) => getCityKey(favorite) === cityKey);
 });
+const headerTitle = computed(() => (selectedCity.value ? formatCity(selectedCity.value) : props.title));
 
 const chartPoints = computed(() => {
   if (!forecast.value) return [];
@@ -196,7 +197,7 @@ function showCitySearch() {
 <template>
   <article class="weather-block">
     <header class="weather-block-header">
-      <h2>{{ title }}</h2>
+      <h2>{{ headerTitle }}</h2>
       <button
         v-if="canRemove && !isReadonly"
         class="remove-block-button"
@@ -204,7 +205,9 @@ function showCitySearch() {
         :aria-label="copy.actions.removeBlock"
         @click="emit('remove')"
       >
-        ×
+        <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
       </button>
     </header>
 

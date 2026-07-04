@@ -22,6 +22,7 @@ const blockToDelete = ref<number | null>(null);
 const favorites = ref<CitySuggestion[]>(loadFavorites());
 const userCity = ref<CitySuggestion | null>(null);
 const activeTab = ref<'weather' | 'favorites'>('weather');
+const showBlocksLimitModal = ref(false);
 const showFavoritesLimitModal = ref(false);
 const isDetectingUserCity = ref(false);
 const userCityError = ref('');
@@ -73,7 +74,11 @@ onMounted(async () => {
 });
 
 function addBlock() {
-  if (!canAddBlock.value) return;
+  if (!canAddBlock.value) {
+    showBlocksLimitModal.value = true;
+    return;
+  }
+
   blocks.value.push({ id: nextBlockId });
   nextBlockId += 1;
 }
@@ -135,24 +140,31 @@ const deleteMessage = computed(() => {
   <main class="weather-page" :class="`theme-${theme}`">
     <section class="weather-shell" aria-labelledby="page-title">
       <header class="app-header">
-        <div class="intro">
-          <p class="eyebrow">OpenWeatherMap</p>
+        <div class="brand-logo">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" focusable="false">
+              <path class="brand-sun" d="M35 2.8a2 2 0 0 1 2 2v2.1a2 2 0 0 1-4 0V4.8a2 2 0 0 1 2-2ZM35 22.9a2 2 0 0 1 2 2V27a2 2 0 0 1-4 0v-2.1a2 2 0 0 1 2-2ZM46.2 14.9a2 2 0 0 1-2 2h-2.1a2 2 0 0 1 0-4h2.1a2 2 0 0 1 2 2ZM28 14.9a2 2 0 0 1-2 2h-2.1a2 2 0 0 1 0-4H26a2 2 0 0 1 2 2ZM43 6.9a2 2 0 0 1 0 2.8l-1.5 1.5a2 2 0 1 1-2.8-2.8l1.5-1.5a2 2 0 0 1 2.8 0ZM31.3 18.6a2 2 0 0 1 0 2.8l-1.5 1.5a2 2 0 1 1-2.8-2.8l1.5-1.5a2 2 0 0 1 2.8 0ZM27 6.9a2 2 0 0 1 2.8 0l1.5 1.5a2 2 0 1 1-2.8 2.8L27 9.7a2 2 0 0 1 0-2.8ZM38.7 18.6a2 2 0 0 1 2.8 0L43 20.1a2 2 0 1 1-2.8 2.8l-1.5-1.5a2 2 0 0 1 0-2.8ZM35 8a7 7 0 1 1 0 14 7 7 0 0 1 0-14Z" />
+              <path class="brand-cloud" d="M16.2 16.2A11.8 11.8 0 0 1 38.4 20a8.3 8.3 0 0 1-1 16.5H13.6a9.7 9.7 0 0 1 2.6-20.3Z" />
+            </svg>
+          </span>
           <h1 id="page-title">Weather App</h1>
-          <p class="intro-text">{{ copy.app.intro }}</p>
         </div>
 
         <div class="header-actions">
           <LanguageToggle v-model="language" :copy="copy.language" />
           <ThemeToggle v-model="theme" :copy="copy.theme" />
-          <button class="add-block-button" type="button" :disabled="!canAddBlock" @click="addBlock">
-            +
+          <button
+            class="add-block-button"
+            type="button"
+            :aria-disabled="!canAddBlock"
+            @click="addBlock"
+          >
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
           </button>
         </div>
       </header>
-
-      <p v-if="!canAddBlock" class="status-text">{{ copy.app.maxBlocks }}</p>
-      <p v-if="isDetectingUserCity" class="status-text">{{ copy.app.userCityLoading }}</p>
-      <p v-else-if="userCityError" class="status-text">{{ userCityError }}</p>
 
       <div class="tabs" role="tablist" aria-label="Weather views">
         <button
@@ -213,6 +225,16 @@ const deleteMessage = computed(() => {
       :cancel-label="copy.modal.cancel"
       @confirm="confirmDeleteBlock"
       @cancel="cancelDeleteBlock"
+    />
+
+    <ConfirmModal
+      v-if="showBlocksLimitModal"
+      :title="copy.app.blocksLimitTitle"
+      :message="copy.app.blocksLimitMessage"
+      :confirm-label="copy.app.blocksLimitConfirm"
+      confirm-variant="primary"
+      @confirm="showBlocksLimitModal = false"
+      @cancel="showBlocksLimitModal = false"
     />
 
     <ConfirmModal
