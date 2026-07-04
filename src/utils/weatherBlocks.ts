@@ -15,12 +15,17 @@ export function loadWeatherBlocks(): StoredWeatherBlock[] {
     const parsedBlocks = JSON.parse(rawBlocks);
     if (!Array.isArray(parsedBlocks) || parsedBlocks.length === 0) return [{ id: 1 }];
 
-    return parsedBlocks.slice(0, 5);
+    const blocksWithCity = parsedBlocks
+      .filter((block): block is StoredWeatherBlock => Boolean(block?.city))
+      .slice(0, 5);
+
+    return blocksWithCity.length ? blocksWithCity : [{ id: 1 }];
   } catch {
     return [{ id: 1 }];
   }
 }
 
 export function saveWeatherBlocks(blocks: StoredWeatherBlock[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(blocks));
+  const blocksWithCity = blocks.filter((block) => block.city);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(blocksWithCity));
 }
